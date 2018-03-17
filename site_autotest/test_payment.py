@@ -5,12 +5,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 import unittest
 
-from site_autotest.utils import set_text
+from site_autotest.utils import set_text, unique_number
 from .settings import *
-
-
-USERNAME_NEW_USER = "user3_test"
-
 
 
 class Payment(unittest.TestCase):
@@ -19,6 +15,9 @@ class Payment(unittest.TestCase):
         self.driver.implicitly_wait(WAIT_TIMEOUT)
         self.verificationErrors = []
         self.accept_next_alert = True
+
+    def generate_username(self):
+        return "test_user_%s" % unique_number()
 
     def test_payment_stripe(self):
         plan = "1 Month"
@@ -46,7 +45,7 @@ class Payment(unittest.TestCase):
         set_text(confirm_password_element, password)
 
     def enter_username(self):
-        username = USERNAME_NEW_USER
+        username = self.generate_username()
         username_element = self.driver.find_element_by_id("username")
         set_text(username_element, username)
 
@@ -107,7 +106,7 @@ class Payment(unittest.TestCase):
         set_text(input_email_el, email)
 
     def generate_email(self):
-        email = EMAIL_NEW_USER
+        email = USER_EMAIL_TEMPLATE % unique_number()
         return email
 
     def choose_plan(self,plan):

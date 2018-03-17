@@ -11,3 +11,7 @@ def set_text(element, text):
     element.click()
     element.clear()
     send_keys_slowly(element, text)
+
+
+def unique_number():
+    return int(1000 * time.time())
