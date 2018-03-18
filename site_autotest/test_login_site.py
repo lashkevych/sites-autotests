@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest, time
 from selenium import webdriver
+from site_autotest.utils import *
 from .settings import *
 
 
@@ -11,14 +12,13 @@ class TestLogin(unittest.TestCase):
         self.driver.implicitly_wait(WAIT_TIMEOUT)
 
     def test_login(self):
-        username = "active-free1"
-        password = TEST_PASSWORD
+        user = create_user()
         self.go_to_login_page()
-        self.enter_username(username)
-        self.enter_password(password)
+        self.enter_username(user.username)
+        self.enter_password(user.password)
         self.press_login_button()
-        self.assert_that_username_on_account_dashboard_is_equal_to(username)
-
+        self.assert_that_username_on_account_dashboard_is_equal_to(user.username)
+        # TODO user should have active status
         #def username_on_account_dashboard():
         #    return ...
         #assert_that(username_on_account_dashboard(), equal_to(username))
