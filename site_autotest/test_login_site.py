@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-import unittest, time
+
+import pytest
 from selenium import webdriver
 from site_autotest.utils import *
 from .settings import *
 
 
-class TestLogin(unittest.TestCase):
-    def setUp(self):
+class TestLogin(object):
+    def setup_method(self):
         #self.driver = webdriver.Firefox()
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(WAIT_TIMEOUT)
@@ -29,12 +30,13 @@ class TestLogin(unittest.TestCase):
         count_max = int(WAIT_TIMEOUT / DELAY_BETWEEN_ATTEMPTS)
         for _ in range(count_max):
             if account.text != '':
-                self.assertIn('Username: %s' % username, account.text)
+                assert 'Username: %s' % username in account.text
                 break
             else:
                 time.sleep(DELAY_BETWEEN_ATTEMPTS)
         else:
-            self.fail('Account.text is empty ')
+            #self.fail('Account.text is empty ')
+            pytest.fail('Account.text is empty ')
 
     def go_to_main_page(self):
         self.driver.get(SITE_URL)
@@ -58,11 +60,8 @@ class TestLogin(unittest.TestCase):
     def press_login_button(self):
         self.driver.find_element_by_xpath("//button[@type='submit']").click()
 
-    def tearDown(self):
-        if self.failureException is not None:
-            self.driver.save_screenshot("Screenshots\%s.png" % self._testMethodName)
+    def teardown_method(self, method):
+        #TODO: add pytest selenium plugin for making screenshots and other usefull things
+        #if self.failureException is not None:
+         #   self.driver.save_screenshot("Screenshots\%s.png" % method)
         self.driver.quit()
-        super(TestLogin, self).tearDown()
-
-if __name__ == "__main__":
-    unittest.main()

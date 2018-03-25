@@ -3,19 +3,16 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
-import unittest
 
 from site_autotest.utils import *
 from site_autotest.utils import generate_username, generate_email
 from .settings import *
 
 
-class Payment(unittest.TestCase):
-    def setUp(self):
+class TestPayment(object):
+    def setup_method(self):
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(WAIT_TIMEOUT)
-        self.verificationErrors = []
-        self.accept_next_alert = True
 
     def test_payment_stripe(self):
         plan = "1 Month"
@@ -129,29 +126,7 @@ class Payment(unittest.TestCase):
             return False
         return True
 
-    def is_alert_present(self):
-        try:
-            self.driver.switch_to_alert()
-        except NoAlertPresentException as e:
-            return False
-        return True
-
-    def close_alert_and_get_its_text(self):
-        try:
-            alert = self.driver.switch_to_alert()
-            alert_text = alert.text
-            if self.accept_next_alert:
-                alert.accept()
-            else:
-                alert.dismiss()
-            return alert_text
-        finally:
-            self.accept_next_alert = True
-
-    def tearDown(self):
+    def teardown_method(self):
         self.driver.quit()
-        self.assertEqual([], self.verificationErrors)
 
 
-if __name__ == "__main__":
-    unittest.main()
