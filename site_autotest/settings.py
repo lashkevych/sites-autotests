@@ -2,7 +2,7 @@ from .config import *
 
 HOSTNAMES = {
     'qa2': {
-        'vpntunnel': "qa2-anonine.vpnsvb.com"
+        'vpntunnel': "qa2-vpntunnel.vpnsvc.com"
     }
 }
 HOSTNAME = HOSTNAMES[TEST_ENV][TEST_RESELLER]

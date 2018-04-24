@@ -116,7 +116,7 @@ class TestPayment(object):
 
     def go_to_payment_page(self):
         self.go_to_main_page()
-        self.driver.find_element_by_link_text("BUY").click()
+        self.driver.find_element_by_link_text('ORDER').click()
 
 
     def is_element_present(self, how, what):
