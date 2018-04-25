@@ -14,14 +14,22 @@ class TestLogin(object):
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(WAIT_TIMEOUT)
 
-    def test_login(self):
+    def test_login_using_username(self):
         user = create_user()
         self.open_login_form()
-        self.enter_username(user.username)
+        self.enter_username_or_email(user.username)
         self.enter_password(user.password)
         self.press_login_button()
         self.assert_that_logout_link_exist()
         # TODO user should have active status
+
+    def test_login_using_email(self):
+        user = create_user()
+        self.open_login_form()
+        self.enter_username_or_email(user.email)
+        self.enter_password(user.password)
+        self.press_login_button()
+        self.assert_that_logout_link_exist()
 
     def assert_that_logout_link_exist(self):
         self.driver.find_element_by_xpath("//a[@href='/en/logout']")
@@ -40,11 +48,11 @@ class TestLogin(object):
         password_element.clear()
         password_element.send_keys(password)
 
-    def enter_username(self, username):
-        username_element = self.driver.find_element_by_id("username_or_email")
-        username_element.click()
-        username_element.clear()
-        username_element.send_keys(username)
+    def enter_username_or_email(self, username_or_email):
+        username_or_email_element = self.driver.find_element_by_id("username_or_email")
+        username_or_email_element.click()
+        username_or_email_element.clear()
+        username_or_email_element.send_keys(username_or_email)
 
     def press_login_button(self):
         self.driver.find_element_by_xpath(

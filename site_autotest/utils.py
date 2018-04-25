@@ -39,6 +39,4 @@ def create_user():
                       auth=(SITE_BASIC_AUTH_USERNAME, SITE_BASIC_AUTH_PASSWORD), data=params)
     #TODO check response code
 
-    pass
-    a = 1
     return user

@@ -14,20 +14,33 @@ class TestPayment(object):
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(WAIT_TIMEOUT)
 
-    def test_payment_stripe(self):
+    def test_payment_credit_card_with_full_registration(self):
         plan = "1 Month"
+        self.go_to_main_page()
+        self.make_payment_credit_card(plan, True)
+        self.confirm_complete_sign_up()
+        self.complete_user_registration()
+        pass
+        # div class = flash-message-success  and text = Your username and password have been set!
+
+    """def test_payment_credit_card_by_existing_user(self):
+        plan = "3 Month"
+        login_user()
+        self.make_payment_credit_card(plan, False)
+"""
+    def make_payment_credit_card(self,plan,need_enter_email):
         self.go_to_payment_page()
-        self.plan = self.choose_plan(plan)
-        self.enter_email()
-        self.select_payment_method()
+        if need_enter_email:
+            self.enter_email()
+        self.choose_plan(plan)
+        self.select_cc_payment_method()
         self.enter_card_data()
         self.submit_purchase()
-        self.confirm_complete_sign_up()
+
+    def complete_user_registration(self):
         self.enter_username()
         self.enter_and_confirm_password()
         self.submit_creds()
-        pass
-        # div class = flash-message-success  and text = Your username and password have been set!
 
     def submit_creds(self):
         self.driver.find_element_by_xpath("//button[@type='submit']").click()
@@ -92,7 +105,7 @@ class TestPayment(object):
         self.driver.find_element_by_xpath("(//input[@id='cc-full-3'])[2]").send_keys(card_number_parts[2])
         self.driver.find_element_by_xpath("(//input[@id='cc-full-4'])[2]").send_keys(card_number_parts[3])
 
-    def select_payment_method(self):
+    def select_cc_payment_method(self):
         self.driver.find_element_by_class_name('stripe').click()
 
     def enter_email(self):
@@ -115,7 +128,6 @@ class TestPayment(object):
 
 
     def go_to_payment_page(self):
-        self.go_to_main_page()
         self.driver.find_element_by_link_text('ORDER').click()
 
 
