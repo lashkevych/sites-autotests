@@ -2,6 +2,8 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
+from site_autotest.pages.main import LoginForm, MainPage
+from site_autotest.pages.control_panel import ControlPanel
 from selenium.common.exceptions import NoAlertPresentException
 
 from site_autotest.utils import *
@@ -13,24 +15,31 @@ class TestPayment(object):
     def setup_method(self):
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(WAIT_TIMEOUT)
+        self.main_page = MainPage(self.driver)
+        self.login_form = LoginForm(self.driver)
+        self.control_panel = ControlPanel(self.driver)
 
     def test_payment_credit_card_with_full_registration(self):
         plan = "1 Month"
-        self.go_to_main_page()
-        self.make_payment_credit_card(plan, True)
-        self.confirm_complete_sign_up()
+        self.main_page.open()
+        self.main_page.go_to_payment_page()
+        self.make_payment_with_credit_card(plan, enter_email=True)
+        self.agree_complete_sign_up()
         self.complete_user_registration()
         pass
+
         # div class = flash-message-success  and text = Your username and password have been set!
 
-    """def test_payment_credit_card_by_existing_user(self):
-        plan = "3 Month"
-        login_user()
-        self.make_payment_credit_card(plan, False)
-"""
-    def make_payment_credit_card(self,plan,need_enter_email):
-        self.go_to_payment_page()
-        if need_enter_email:
+    def test_payment_credit_card_by_existing_user(self):
+        plan = "3 Months"
+        self.user = create_user()
+        self.login_form.login(self.user.username, self.user.password)
+        self.control_panel.go_to_upgrade_page()
+        self.make_payment_with_credit_card(plan, enter_email=False)
+        self.agree_go_to_account()
+
+    def make_payment_with_credit_card(self, plan, enter_email):
+        if enter_email:
             self.enter_email()
         self.choose_plan(plan)
         self.select_cc_payment_method()
@@ -57,9 +66,11 @@ class TestPayment(object):
         username_element = self.driver.find_element_by_id("username")
         set_text(username_element, username)
 
-    def confirm_complete_sign_up(self):
+    def agree_complete_sign_up(self):
         self.driver.find_element_by_xpath("//div[contains(@class, 'signup')]//a[contains(@class, 'btn')]").click()
 
+    def agree_go_to_account(self):
+        self.driver.find_element_by_xpath("//div[contains(@class, 'signup')]//a[contains(@class, 'btn')]").click()
 
     def submit_purchase(self):
         self.driver.find_element_by_xpath("//button[contains(@class, 'btn-purchase')]").click()
@@ -82,22 +93,14 @@ class TestPayment(object):
         set_text(cvc_code_element, cvc_code)
 
     def enter_year_exp(self):
-        #self.driver.find_element_by_xpath(
-         #   "(//div[@id='card-entry']/div/div[2]/div/div/div[2]/p/span[4]/span/select)[2]").click()
         Select(self.driver.find_elements_by_class_name('year-exp')[2].find_element_by_tag_name('select')
                ).select_by_visible_text(CARD_EXP_YEAR)
-        #self.driver.find_element_by_xpath("(//option[@value='2019'])[3]").click()
 
     def enter_month_exp(self):
-        #self.driver.find_element_by_xpath(
-        #    "(//div[@id='card-entry']/div/div[2]/div/div/div[2]/p/span[2]/span/select)[2]").click()
         Select(self.driver.find_elements_by_class_name('month-exp')[2].find_element_by_tag_name('select')
                ).select_by_visible_text(CARD_EXP_MONTH)
-        #self.driver.find_element_by_xpath("(//option[@value='03'])[3]").click()
 
     def enter_card_number(self):
-        #self.driver.find_element_by_id("cc-full-1").click()
-        #self.driver.find_element_by_id("cc-full-1").send_keys('4242')
         card_number_parts = CARD_NUMBER.split('-')
         self.driver.find_element_by_xpath("(//input[@id='cc-full-1'])[2]").click()
         self.driver.find_element_by_xpath("(//input[@id='cc-full-1'])[2]").send_keys(card_number_parts[0])
@@ -122,14 +125,6 @@ class TestPayment(object):
                 break
         else:
             raise Exception("Can't find %s plan" % plan)
-
-    def go_to_main_page(self):
-        self.driver.get(SITE_URL)
-
-
-    def go_to_payment_page(self):
-        self.driver.find_element_by_link_text('ORDER').click()
-
 
     def is_element_present(self, how, what):
         try:
