@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-from selenium import webdriver
-from site_autotest.pages.main import LoginForm, MainPage
-from selenium.common.exceptions import NoAlertPresentException
+import pytest
+from site_autotest.pages.main import MainPage
 
 from site_autotest.utils import *
-from site_autotest.utils import generate_username, generate_email
-from .settings import *
 
 
 class TestPayment(object):
-    def setup_method(self):
-        self.driver = webdriver.Chrome()
-        self.driver.implicitly_wait(WAIT_TIMEOUT)
+    @pytest.fixture(autouse=True)
+    def setup_method(self, selenium):
+        self.driver = selenium
         self.main_page = MainPage(self.driver)
         self.main_page.open()
 
@@ -36,8 +33,3 @@ class TestPayment(object):
 
     def assert_that_logout_link_exist(self):
         self.driver.find_element_by_xpath("//a[@href='/en/logout']")
-
-    def teardown_method(self):
-        self.driver.quit()
-
-

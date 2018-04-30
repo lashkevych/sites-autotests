@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
+import pytest
 
-from selenium import webdriver
-
-from site_autotest.pages.main import MainPage, LoginForm
+from site_autotest.pages.main import MainPage
 from site_autotest.utils import *
-from .settings import *
 
 
 class TestLogin(object):
-    def setup_method(self):
-        #self.driver = webdriver.Firefox()
-        self.driver = webdriver.Chrome()
-        self.driver.implicitly_wait(WAIT_TIMEOUT)
+    @pytest.fixture(autouse=True)
+    def setup_method(self, selenium):
+        self.driver = selenium
         self.main_page = MainPage(self.driver)
         self.main_page.open()
         self.login_form = self.main_page.open_login_form()
@@ -27,12 +24,5 @@ class TestLogin(object):
 
     def assert_that_logout_link_exist(self):
         self.driver.find_element_by_xpath("//a[@href='/en/logout']")
-
-    def teardown_method(self, method):
-        #TODO: add pytest selenium plugin for making screenshots and other usefull things
-        #if self.failureException is not None:
-         #   self.driver.save_screenshot("Screenshots\%s.png" % method)
-        self.driver.quit()
-
 
 #    pytest.fail('Account.text is empty ')
