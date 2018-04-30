@@ -2,7 +2,7 @@
 
 from selenium import webdriver
 
-from site_autotest.pages.main import LoginForm
+from site_autotest.pages.main import MainPage, LoginForm
 from site_autotest.utils import *
 from .settings import *
 
@@ -12,13 +12,14 @@ class TestLogin(object):
         #self.driver = webdriver.Firefox()
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(WAIT_TIMEOUT)
-        self.login_form = LoginForm(self.driver)
+        self.main_page = MainPage(self.driver)
+        self.main_page.open()
+        self.login_form = self.main_page.open_login_form()
         self.user = create_user()
 
     def test_login_using_username(self):
         self.login_form.login(self.user.username, self.user.password)
         self.assert_that_logout_link_exist()
-        # TODO user should have active status
 
     def test_login_using_email(self):
         self.login_form.login(self.user.email, self.user.password)

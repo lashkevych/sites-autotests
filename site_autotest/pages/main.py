@@ -1,7 +1,8 @@
 import time
 
 from site_autotest.settings import SITE_URL, DELAY_BETWEEN_ATTEMPTS
-
+from site_autotest.pages.control_panel import ControlPanelPage
+from site_autotest.pages.payment import PaymentPage
 
 class MainPage(object):
     def __init__(self, driver):
@@ -10,25 +11,23 @@ class MainPage(object):
     def open(self):
         self.driver.get(SITE_URL)
 
-    def go_to_payment_page(self):
+    def open_payment_page(self):
         self.driver.find_element_by_link_text('ORDER').click()
+        return PaymentPage(self.driver)
 
+    def open_login_form(self):
+        self.driver.find_element_by_id("login").click()
+        time.sleep(DELAY_BETWEEN_ATTEMPTS)
+        return LoginForm(self.driver)
 
 class LoginForm(object):
     def __init__(self, driver):
         self.driver = driver
-        self.main_page = MainPage(driver)
-
-    def open(self):
-        self.main_page.open()
-        self.driver.find_element_by_id("login").click()
-        time.sleep(DELAY_BETWEEN_ATTEMPTS)
 
     def login(self, username_or_email, password):
-        self.open()
         self.enter_username_or_email(username_or_email)
         self.enter_password(password)
-        self.press_login_button()
+        return self.submit_login()
 
     def enter_password(self, password):
         password_element = self.driver.find_element_by_id("login-password")
@@ -42,6 +41,7 @@ class LoginForm(object):
         username_or_email_element.clear()
         username_or_email_element.send_keys(username_or_email)
 
-    def press_login_button(self):
+    def submit_login(self):
         self.driver.find_element_by_xpath(
             "//form[@action='/en/login']/input[@type='submit']").click()
+        return ControlPanelPage(self.driver)
