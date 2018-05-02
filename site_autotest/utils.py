@@ -24,14 +24,14 @@ def unique_number():
 def generate_username():
     return "test_user_%s" % unique_number()
 
-def generate_email():
-    email = USER_EMAIL_TEMPLATE % unique_number()
+def generate_email(email_prefix):
+    email = USER_EMAIL_TEMPLATE % (email_prefix, unique_number())
     return email
 
 User = collections.namedtuple('User', 'username password email')
 
-def create_user():
-    user = User(username=generate_username(), password = TEST_PASSWORD, email=generate_email())
+def create_user(email_prefix):
+    user = User(username=generate_username(), password=TEST_PASSWORD, email=generate_email(email_prefix))
     params = {'username': user.username, 'email': user.email, 'password':user.password,
               'passconfirm':user.password, 'emailconfirm':user.email, 'agree':'1'}
 

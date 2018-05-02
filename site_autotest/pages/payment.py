@@ -9,41 +9,39 @@ class PaymentPage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def make_payment_with_credit_card(self, plan, enter_email):
+    def make_payment_with_credit_card(self, plan, email_prefix, enter_email=True, card_name='Visa_stripe'):
         if enter_email:
-            self.enter_email()
+            self.enter_email(email_prefix)
         self.choose_plan(plan)
         self.select_cc_payment_method()
-        self.enter_card_data()
+        self.enter_card_data(CARDS[card_name])
         self.submit_purchase()
 
-    def enter_card_data(self):
-        self.enter_card_number()
-        self.enter_month_exp()
-        self.enter_year_exp()
-        self.enter_cvc_code()
-        self.enter_zip_postal_code()
+    def enter_card_data(self, card):
+        self.enter_card_number(card.number)
+        self.enter_month_exp(card.exp_month)
+        self.enter_year_exp(card.exp_year)
+        self.enter_cvc_code(card.cvc_code)
+        self.enter_zip_postal_code(card.zip_postal_code)
 
-    def enter_zip_postal_code(self):
-        zip_postal_code = ZIP_POSTAL_CODE
+    def enter_zip_postal_code(self, zip_postal_code):
         zip_postal_code_element = self.driver.find_elements_by_xpath("(//input[contains(@class, 'address_zip')])")[2]
         set_text(zip_postal_code_element, zip_postal_code)
 
-    def enter_cvc_code(self):
-        cvc_code = CARD_CVC_CODE
+    def enter_cvc_code(self, cvc_code):
         cvc_code_element = self.driver.find_elements_by_xpath("(//input[contains(@class, 'cvc')])")[2]
         set_text(cvc_code_element, cvc_code)
 
-    def enter_year_exp(self):
+    def enter_year_exp(self, exp_year):
         Select(self.driver.find_elements_by_class_name('year-exp')[2].find_element_by_tag_name('select')
-               ).select_by_visible_text(CARD_EXP_YEAR)
+               ).select_by_visible_text(exp_year)
 
-    def enter_month_exp(self):
+    def enter_month_exp(self, exp_month):
         Select(self.driver.find_elements_by_class_name('month-exp')[2].find_element_by_tag_name('select')
-               ).select_by_visible_text(CARD_EXP_MONTH)
+               ).select_by_visible_text(exp_month)
 
-    def enter_card_number(self):
-        card_number_parts = CARD_NUMBER.split('-')
+    def enter_card_number(self, card_number):
+        card_number_parts = card_number.split('-')
         self.driver.find_element_by_xpath("(//input[@id='cc-full-1'])[2]").click()
         self.driver.find_element_by_xpath("(//input[@id='cc-full-1'])[2]").send_keys(card_number_parts[0])
         self.driver.find_element_by_xpath("(//input[@id='cc-full-2'])[2]").send_keys(card_number_parts[1])
@@ -53,8 +51,8 @@ class PaymentPage(object):
     def select_cc_payment_method(self):
         self.driver.find_element_by_class_name('stripe').click()
 
-    def enter_email(self):
-        email = generate_email()
+    def enter_email(self, email_prefix):
+        email = generate_email(email_prefix)
         input_email_el = self.driver.find_element_by_xpath("//div[contains(@id, 'email-entry')]//input[@type='text']")
         set_text(input_email_el, email)
 
