@@ -1,3 +1,5 @@
+from time import sleep
+
 from selenium.webdriver.support.ui import Select
 
 from site_autotest.settings import *
@@ -19,19 +21,38 @@ class PaymentPage(object):
 
     def enter_card_data(self, card):
         self.enter_card_number(card.number)
-        self.enter_month_exp(card.exp_month)
-        self.enter_year_exp(card.exp_year)
+        self.enter_exp_date(card.exp_month, card.exp_year)
         self.enter_cvc_code(card.cvc_code)
         self.enter_zip_postal_code(card.zip_postal_code)
 
     def enter_zip_postal_code(self, zip_postal_code):
-        zip_postal_code_element = self.driver.find_elements_by_xpath("(//input[contains(@class, 'address_zip')])")[2]
+        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='square-iframe']"))
+        sleep(DELAY_BETWEEN_ATTEMPTS)
+        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='sq-postal-code']"))
+        zip_postal_code_element = self.driver.find_element_by_xpath("//input")
         set_text(zip_postal_code_element, zip_postal_code)
+        self.driver.switch_to.default_content()
+        #zip_postal_code_element = self.driver.find_elements_by_xpath("(//input[contains(@class, 'address_zip')])")[2]
 
     def enter_cvc_code(self, cvc_code):
-        cvc_code_element = self.driver.find_elements_by_xpath("(//input[contains(@class, 'cvc')])")[2]
+        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='square-iframe']"))
+        sleep(DELAY_BETWEEN_ATTEMPTS)
+        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='sq-cvv']"))
+        cvc_code_element = self.driver.find_element_by_xpath("//input")
         set_text(cvc_code_element, cvc_code)
+        self.driver.switch_to.default_content()
+        #cvc_code_element = self.driver.find_elements_by_xpath("(//input[contains(@class, 'cvc')])")[2]
 
+    def enter_exp_date(self, exp_month, exp_year):
+        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='square-iframe']"))
+        sleep(DELAY_BETWEEN_ATTEMPTS)
+        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='sq-expiration-date']"))
+        exp_date_element = self.driver.find_element_by_xpath("//input")
+        exp_date = exp_month + exp_year
+        set_text(exp_date_element, exp_date)
+        self.driver.switch_to.default_content()
+
+    """
     def enter_year_exp(self, exp_year):
         Select(self.driver.find_elements_by_class_name('year-exp')[2].find_element_by_tag_name('select')
                ).select_by_visible_text(exp_year)
@@ -39,17 +60,27 @@ class PaymentPage(object):
     def enter_month_exp(self, exp_month):
         Select(self.driver.find_elements_by_class_name('month-exp')[2].find_element_by_tag_name('select')
                ).select_by_visible_text(exp_month)
+    """
 
     def enter_card_number(self, card_number):
+        """
         card_number_parts = card_number.split('-')
         self.driver.find_element_by_xpath("(//input[@id='cc-full-1'])[2]").click()
         self.driver.find_element_by_xpath("(//input[@id='cc-full-1'])[2]").send_keys(card_number_parts[0])
         self.driver.find_element_by_xpath("(//input[@id='cc-full-2'])[2]").send_keys(card_number_parts[1])
         self.driver.find_element_by_xpath("(//input[@id='cc-full-3'])[2]").send_keys(card_number_parts[2])
         self.driver.find_element_by_xpath("(//input[@id='cc-full-4'])[2]").send_keys(card_number_parts[3])
+        """
+        #get_attribute("attribute name")
+        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='square-iframe']"))
+        sleep(DELAY_BETWEEN_ATTEMPTS)
+        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='sq-card-number']"))
+        card_number_element = self.driver.find_element_by_xpath("//input")
+        set_text(card_number_element, card_number)
+        self.driver.switch_to.default_content()
 
     def select_cc_payment_method(self):
-        self.driver.find_element_by_class_name('stripe').click()
+        self.driver.find_element_by_class_name('square').click()
 
     def enter_email(self, email_prefix):
         email = generate_email(email_prefix)

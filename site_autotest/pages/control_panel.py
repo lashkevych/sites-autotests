@@ -1,5 +1,8 @@
+from time import sleep
 
 from site_autotest.pages.payment import PaymentPage
+from site_autotest.settings import DELAY_BETWEEN_ATTEMPTS
+
 
 class ControlPanelPage(object):
     def __init__(self, driver):
@@ -10,6 +13,7 @@ class ControlPanelPage(object):
 
     def open_upgrade_page(self):
         self.driver.find_element_by_partial_link_text('UPGRADE').click()
+        sleep(DELAY_BETWEEN_ATTEMPTS+1)
         return PaymentPage(self.driver)
 
     def exist_logout_link(self):

@@ -35,8 +35,8 @@ def create_user(email_prefix):
     params = {'username': user.username, 'email': user.email, 'password':user.password,
               'passconfirm':user.password, 'emailconfirm':user.email, 'agree':'1'}
 
-    r = requests.post("http://%s/en/ajax/register-user" % HOSTNAME,
+    #r = requests.post("http://%s/en/ajax/register-user" % HOSTNAME,
+    r = requests.post("http://%s/ajax/register-user" % HOSTNAME,
                       auth=(SITE_BASIC_AUTH_USERNAME, SITE_BASIC_AUTH_PASSWORD), data=params)
-    #TODO check response code
-
+    assert r.ok, r.text
     return user

@@ -4,7 +4,8 @@ from .config import *
 
 HOSTNAMES = {
     'qa2': {
-        'vpntunnel': "qa2-vpntunnel.vpnsvc.com"
+        'vpntunnel': "qa2-vpntunnel.vpnsvc.com",
+        'box-pn': 'qa2-boxpn.vpnsvc.com'
     }
 }
 HOSTNAME = HOSTNAMES[TEST_ENV][TEST_RESELLER]
@@ -23,47 +24,44 @@ CARDS = {
         zip_postal_code='111111'),
 
     'Visa_squareup': Card(
-        number='4532-7597-3454-5858', 
-        exp_month='03', 
-        exp_year='2019',
+        number='4111111111111111',
+        exp_month='12',
+        exp_year='20',
         cvc_code='111', 
         zip_postal_code='111111'),
 
     'MasterCards_squareup': Card(
-        number='5409-8899-4417-9029', 
+        number='5105105105105100',
         exp_month='03', 
-        exp_year='2019',
+        exp_year='19',
         cvc_code='111',
         zip_postal_code='111111'),
 
     'AmericanExpress_squareup': Card(
-        number='3712-6346-2726-550',
+        number='340000000000009',
         exp_month='03',
-        exp_year='2019',
+        exp_year='19',
         cvc_code='1111',
         zip_postal_code='111111'),
 
     'Visa_squareup_incorrect_cvc': Card(
-        #number='4532-7597-3454-5858',
-        number='4242-4242-4242-4242',
+        number='4111111111111111',
         exp_month='03',
-        exp_year='2019',
+        exp_year='19',
         cvc_code='911',
         zip_postal_code='111111'),
 
     'Visa_squareup_incorrect_zip': Card(
-        #number='4532-7597-3454-5858',
-        number='4242-4242-4242-4242',
+        number='4111111111111111',
         exp_month='03',
-        exp_year='2019',
+        exp_year='19',
         cvc_code='111',
         zip_postal_code='99999'),
 
     'Visa_squareup_incorrect_exp_date': Card(
-        #number='4532-7597-3454-5858',
-        number='4242-4242-4242-4242',
+        number='4111111111111111',
         exp_month='01',
-        exp_year='2036',
+        exp_year='40',
         #exp_year='40'
         cvc_code='111',
         zip_postal_code='111111')
