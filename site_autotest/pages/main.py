@@ -16,7 +16,7 @@ class MainPage(object):
         return PaymentPage(self.driver)
 
     def open_login_form(self):
-        #self.driver.find_element_by_id("login").click()
+        self.driver.find_element_by_id("login").click()
         time.sleep(DELAY_BETWEEN_ATTEMPTS)
         return LoginForm(self.driver)
 
@@ -30,20 +30,20 @@ class LoginForm(object):
         return self.submit_login()
 
     def enter_password(self, password):
-        #password_element = self.driver.find_element_by_id("login-password")
-        password_element = self.driver.find_element_by_css_selector("input[name='password']")
+        password_element = self.driver.find_element_by_id("login-password")
+        #password_element = self.driver.find_element_by_css_selector("input[name='password']")
         password_element.click()
         password_element.clear()
         password_element.send_keys(password)
 
     def enter_username_or_email(self, username_or_email):
-        #username_or_email_element = self.driver.find_element_by_id("username_or_email")
-        username_or_email_element = self.driver.find_element_by_css_selector("input[name='username_or_email']")
+        username_or_email_element = self.driver.find_element_by_id("username_or_email")
+        #username_or_email_element = self.driver.find_element_by_css_selector("input[name='username_or_email']")
         username_or_email_element.click()
         username_or_email_element.clear()
         username_or_email_element.send_keys(username_or_email)
 
     def submit_login(self):
-        #self.driver.find_element_by_xpath("//form[@action='/en/login']/input[@type='submit']").click()
-        self.driver.find_element_by_xpath("//form[@id='loginForm']//button[@type='submit']").click()
+        self.driver.find_element_by_xpath("//form[@action='/en/login']/input[@type='submit']").click()
+        #self.driver.find_element_by_xpath("//form[@id='loginForm']//button[@type='submit']").click()
         return ControlPanelPage(self.driver)
