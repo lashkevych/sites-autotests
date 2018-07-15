@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from site_autotest.pages.main import MainPage
+from site_autotest.pages.main import *
 from site_autotest.utils import *
 
 
@@ -11,7 +11,7 @@ class TestLogin(object):
         self.driver = selenium
         self.main_page = MainPage(self.driver)
         self.main_page.open()
-        self.login_form = self.main_page.open_login_form()
+        self.login_form = self.main_page.get_login_form()
         self.user = create_user()
 
     def test_login_using_username(self):
@@ -23,6 +23,10 @@ class TestLogin(object):
         self.assert_that_logout_link_exist()
 
     def assert_that_logout_link_exist(self):
-        self.driver.find_element_by_xpath("//a[@href='/en/logout']")
-
+        if TEST_RESELLER == 'anonine':
+            self.driver.find_element_by_xpath("//a[@href='/en/logout']")
+        elif TEST_RESELLER == 'box-pn':
+            self.driver.find_element_by_xpath("//a[@href='/logout']")
+        else:
+            pytest.fail('unknown reseller in assert login test')
 #    pytest.fail('Account.text is empty ')

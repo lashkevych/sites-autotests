@@ -5,7 +5,18 @@ from .config import *
 HOSTNAMES = {
     'qa2': {
         'vpntunnel': "qa2-vpntunnel.vpnsvc.com",
-        'box-pn': 'qa2-boxpn.vpnsvc.com'
+        'box-pn': 'qa2-boxpn.vpnsvc.com',
+        'anonine': 'qa2-anonine.vpnsvc.com'
+    },
+    'qa3': {
+        'vpntunnel': "qa3-vpntunnel.vpnsvc.com",
+        'box-pn': 'qa3-boxpn.vpnsvc.com',
+        'anonine': 'qa3-anonine.vpnsvc.com'
+    },
+    'qa4': {
+        'vpntunnel': "qa4-vpntunnel.vpnsvc.com",
+        'box-pn': 'qa4-boxpn.vpnsvc.com',
+        'anonine': 'qa4-anonine.vpnsvc.com'
     }
 }
 HOSTNAME = HOSTNAMES[TEST_ENV][TEST_RESELLER]

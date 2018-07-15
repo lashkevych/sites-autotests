@@ -1,10 +1,11 @@
 import collections
 import time
 
+import pytest
 import requests
 
+
 from site_autotest.config import *
-from site_autotest.config import USER_EMAIL_TEMPLATE
 from site_autotest.settings import HOSTNAME
 
 
@@ -28,15 +29,21 @@ def generate_email(email_prefix):
     email = USER_EMAIL_TEMPLATE % (email_prefix, unique_number())
     return email
 
+
 User = collections.namedtuple('User', 'username password email')
 
-def create_user(email_prefix):
+
+def create_user(email_prefix=''):
     user = User(username=generate_username(), password=TEST_PASSWORD, email=generate_email(email_prefix))
     params = {'username': user.username, 'email': user.email, 'password':user.password,
               'passconfirm':user.password, 'emailconfirm':user.email, 'agree':'1'}
-
-    r = requests.post("http://%s/en/ajax/register-user" % HOSTNAME,
-    #r = requests.post("http://%s/ajax/register-user" % HOSTNAME,
-                      auth=(SITE_BASIC_AUTH_USERNAME, SITE_BASIC_AUTH_PASSWORD), data=params)
-    assert r.ok, r.text
+    if TEST_RESELLER == 'anonine':
+        r = requests.post("http://%s/en/ajax/register-user" % HOSTNAME,
+                          auth=(SITE_BASIC_AUTH_USERNAME, SITE_BASIC_AUTH_PASSWORD), data=params)
+    elif TEST_RESELLER == 'box-pn':
+        r = requests.post("http://%s/ajax/register-user" % HOSTNAME,
+                          auth=(SITE_BASIC_AUTH_USERNAME, SITE_BASIC_AUTH_PASSWORD), data=params)
+    else:
+        pytest.fail('unknown reseller in create user')
+    #assert r.ok, r.text
     return user
