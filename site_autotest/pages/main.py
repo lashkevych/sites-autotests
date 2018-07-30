@@ -1,5 +1,7 @@
 import time
 
+import pytest
+
 from site_autotest.config import TEST_RESELLER
 from site_autotest.settings import SITE_URL, DELAY_BETWEEN_ATTEMPTS
 from site_autotest.pages.control_panel import ControlPanelPage
@@ -14,7 +16,12 @@ class MainPage(object):
         self.driver.get(SITE_URL)
 
     def open_payment_page(self):
-        self.driver.find_element_by_link_text('ORDER').click()
+        if TEST_RESELLER == 'anonine':
+            self.driver.find_element_by_link_text('BUY').click()
+        elif TEST_RESELLER == 'box-pn':
+            self.driver.find_element_by_link_text('Order').click()
+        else:
+            pytest.fail('unknown reseller in open order page')
         return PaymentPage(self.driver)
 
     def get_login_form(self):

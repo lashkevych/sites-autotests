@@ -16,29 +16,44 @@ class TestPayment(object):
         self.main_page.open()
 
     def test_single_payment_cc_with_full_registration_1m(self):
-        plan = '1 Month'
+        purchased_plan = '1 Month'
         payment_page = self.main_page.open_payment_page()
-        payment_page.make_payment_with_credit_card(plan, 'full_reg_1m', True, 'Visa_squareup')
-        complete_user_sign_up_page = payment_page.agree_complete_sign_up()
-        control_panel_page = complete_user_sign_up_page.complete_user_sign_up()
+
+        payment_page.make_payment_with_credit_card(purchased_plan, 'full_reg_1m_single', True, False, 'Visa_hypepay')
+        control_panel_page = self.complete_registration(payment_page)
+
+        self.assert_that_plans_are_equal(purchased_plan, self.get_last_plan(control_panel_page))
 
     def test_single_payment_cc_with_full_registration_3m(self):
-        plan = '3 Months'
+        purchased_plan = '3 Months'
         payment_page = self.main_page.open_payment_page()
-        payment_page.make_payment_with_credit_card(plan, 'full_reg_3m', True, 'MasterCards_squareup')
+
+        payment_page.make_payment_with_credit_card(purchased_plan, 'full_reg_3m_single', True, False, 'MasterCards_hypepay')
+        control_panel_page = self.complete_registration(payment_page)
+
+        self.assert_that_plans_are_equal(purchased_plan, self.get_last_plan(control_panel_page))
+
+    def complete_registration(self, payment_page):
         complete_user_sign_up_page = payment_page.agree_complete_sign_up()
-        control_panel_page = complete_user_sign_up_page.complete_user_sign_up()
-        pass
+        return complete_user_sign_up_page.complete_user_sign_up()
 
-        # div class = flash-message-success  and text = Your username and password have been set!
+    def get_last_plan(self, control_panel_page):
+        profile_page = control_panel_page.open_profile_page()
+        return profile_page.get_last_plan()
 
-    def test_single_payment_cc_by_existing_user_12m(self):
+    def assert_that_plans_are_equal(self, purchased_plan, last_plan):
+        assert purchased_plan.upper() == last_plan.upper()
+
+
+
+
+    '''def test_single_payment_cc_by_existing_user_12m(self):
         plan = '12 Months'
         user = create_user('exist_user_12m')
         login_form = self.main_page.get_login_form()
         control_panel_page = login_form.login(user.username, user.password)
         payment_page = control_panel_page.open_upgrade_page()
-        payment_page.make_payment_with_credit_card(plan, '', False, 'AmericanExpress_squareup')
+        payment_page.make_payment_with_credit_card(plan, '', False, 'AmericanExpress_hypepay')
         control_panel_page = payment_page.agree_go_to_account()
 
 
@@ -93,8 +108,5 @@ class TestPayment(object):
         plan = '1 Month'
         payment_page = control_panel_page.open_upgrade_page()
         payment_page.make_payment_with_credit_card(plan, '', False, 'MasterCards_squareup')
-        control_panel_page = payment_page.agree_go_to_account()
+        control_panel_page = payment_page.agree_go_to_account()'''
 
-
-    def assert_that_logout_link_exist(self):
-        self.driver.find_element_by_xpath("//a[@href='/en/logout']")

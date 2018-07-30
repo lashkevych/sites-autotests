@@ -11,11 +11,13 @@ class PaymentPage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def make_payment_with_credit_card(self, plan, email_prefix, enter_email=True, card_name='Visa_stripe'):
-        if enter_email:
+    def make_payment_with_credit_card(self, plan, email_prefix, is_enter_email=True, is_subscription=False,  card_name='Visa_hypepay'):
+        if is_enter_email:
             self.enter_email(email_prefix)
         self.choose_plan(plan)
         self.select_cc_payment_method()
+        if not is_subscription:
+            self.uncheck_subscription()
         self.enter_card_data(CARDS[card_name])
         self.submit_purchase()
 
@@ -26,31 +28,17 @@ class PaymentPage(object):
         self.enter_zip_postal_code(card.zip_postal_code)
 
     def enter_zip_postal_code(self, zip_postal_code):
-        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='square-iframe']"))
-        sleep(DELAY_BETWEEN_ATTEMPTS)
-        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='sq-postal-code']"))
-        zip_postal_code_element = self.driver.find_element_by_xpath("//input")
+        zip_postal_code_element = self.driver.find_element_by_xpath("//input[@id='card-zip-code']")
         set_text(zip_postal_code_element, zip_postal_code)
-        self.driver.switch_to.default_content()
-        #zip_postal_code_element = self.driver.find_elements_by_xpath("(//input[contains(@class, 'address_zip')])")[2]
 
     def enter_cvc_code(self, cvc_code):
-        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='square-iframe']"))
-        sleep(DELAY_BETWEEN_ATTEMPTS)
-        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='sq-cvv']"))
-        cvc_code_element = self.driver.find_element_by_xpath("//input")
+        cvc_code_element = self.driver.find_element_by_xpath("//input[@placeholder='CVC']")
         set_text(cvc_code_element, cvc_code)
-        self.driver.switch_to.default_content()
-        #cvc_code_element = self.driver.find_elements_by_xpath("(//input[contains(@class, 'cvc')])")[2]
 
     def enter_exp_date(self, exp_month, exp_year):
-        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='square-iframe']"))
-        sleep(DELAY_BETWEEN_ATTEMPTS)
-        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='sq-expiration-date']"))
-        exp_date_element = self.driver.find_element_by_xpath("//input")
+        exp_date_element = self.driver.find_element_by_xpath("//input[@id='exp-date']")
         exp_date = exp_month + exp_year
         set_text(exp_date_element, exp_date)
-        self.driver.switch_to.default_content()
 
     """
     def enter_year_exp(self, exp_year):
@@ -63,24 +51,12 @@ class PaymentPage(object):
     """
 
     def enter_card_number(self, card_number):
-        """
-        card_number_parts = card_number.split('-')
-        self.driver.find_element_by_xpath("(//input[@id='cc-full-1'])[2]").click()
-        self.driver.find_element_by_xpath("(//input[@id='cc-full-1'])[2]").send_keys(card_number_parts[0])
-        self.driver.find_element_by_xpath("(//input[@id='cc-full-2'])[2]").send_keys(card_number_parts[1])
-        self.driver.find_element_by_xpath("(//input[@id='cc-full-3'])[2]").send_keys(card_number_parts[2])
-        self.driver.find_element_by_xpath("(//input[@id='cc-full-4'])[2]").send_keys(card_number_parts[3])
-        """
         #get_attribute("attribute name")
-        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='square-iframe']"))
-        sleep(DELAY_BETWEEN_ATTEMPTS)
-        self.driver.switch_to.frame(self.driver.find_element_by_css_selector("iframe[id='sq-card-number']"))
-        card_number_element = self.driver.find_element_by_xpath("//input")
+        card_number_element = self.driver.find_element_by_xpath("//input[@id='card-number']")
         set_text(card_number_element, card_number)
-        self.driver.switch_to.default_content()
 
     def select_cc_payment_method(self):
-        self.driver.find_element_by_class_name('square').click()
+        self.driver.find_element_by_class_name('hypepay').click()
 
     def enter_email(self, email_prefix):
         email = generate_email(email_prefix)
@@ -90,6 +66,7 @@ class PaymentPage(object):
     def choose_plan(self,plan):
         plans = self.driver.find_elements_by_xpath(
             "//div[contains(@class, 'plans-select')]//div[contains(@class, 'plan')]")
+        #"div.plans-select div.plan"
         for plan_el in plans:
             if plan_el.find_element_by_class_name('month').text == plan:
                 plan_el.click()
@@ -98,7 +75,7 @@ class PaymentPage(object):
             raise Exception("Can't find %s plan" % plan)
 
     def submit_purchase(self):
-        self.driver.find_element_by_xpath("//button[contains(@class, 'btn-purchase')]").click()
+        self.driver.find_element_by_xpath("//button[contains(@class, 'card-v2__btn-purchase')]").click()
 
     def agree_go_to_account(self):
         from site_autotest.pages.control_panel import ControlPanelPage
@@ -117,4 +94,7 @@ class PaymentPage(object):
         except NoSuchElementException as e:
             return False
         return True
+
+    def uncheck_subscription(self):
+        self.driver.find_element_by_xpath("//label[contains(@for, 'enable-subscription-checkbox')]").click()
 
