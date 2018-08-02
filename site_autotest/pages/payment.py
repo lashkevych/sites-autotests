@@ -11,14 +11,15 @@ class PaymentPage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def make_payment_with_credit_card(self, plan, email_prefix, is_enter_email=True, is_subscription=False,  card_name='Visa_hypepay'):
+    def make_payment_with_credit_card(self, plan, email_prefix, is_enter_email=True, is_subscription=False,  card_type='Visa_hypepay'):
         if is_enter_email:
             self.enter_email(email_prefix)
         self.choose_plan(plan)
         self.select_cc_payment_method()
         if not is_subscription:
             self.uncheck_subscription()
-        self.enter_card_data(CARDS[card_name])
+        random_card = generate_random_card(card_type)
+        self.enter_card_data(random_card)
         self.submit_purchase()
 
     def enter_card_data(self, card):
@@ -40,18 +41,7 @@ class PaymentPage(object):
         exp_date = exp_month + exp_year
         set_text(exp_date_element, exp_date)
 
-    """
-    def enter_year_exp(self, exp_year):
-        Select(self.driver.find_elements_by_class_name('year-exp')[2].find_element_by_tag_name('select')
-               ).select_by_visible_text(exp_year)
-
-    def enter_month_exp(self, exp_month):
-        Select(self.driver.find_elements_by_class_name('month-exp')[2].find_element_by_tag_name('select')
-               ).select_by_visible_text(exp_month)
-    """
-
     def enter_card_number(self, card_number):
-        #get_attribute("attribute name")
         card_number_element = self.driver.find_element_by_xpath("//input[@id='card-number']")
         set_text(card_number_element, card_number)
 
@@ -66,7 +56,6 @@ class PaymentPage(object):
     def choose_plan(self,plan):
         plans = self.driver.find_elements_by_xpath(
             "//div[contains(@class, 'plans-select')]//div[contains(@class, 'plan')]")
-        #"div.plans-select div.plan"
         for plan_el in plans:
             if plan_el.find_element_by_class_name('month').text == plan:
                 plan_el.click()
@@ -98,3 +87,4 @@ class PaymentPage(object):
     def uncheck_subscription(self):
         self.driver.find_element_by_xpath("//label[contains(@for, 'enable-subscription-checkbox')]").click()
 
+#get_attribute("attribute name")

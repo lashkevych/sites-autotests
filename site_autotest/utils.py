@@ -1,4 +1,5 @@
 import collections
+import random
 import time
 
 import pytest
@@ -6,7 +7,10 @@ import requests
 
 
 from site_autotest.config import *
-from site_autotest.settings import HOSTNAME
+from site_autotest.settings import *
+
+
+User = collections.namedtuple('User', 'username password email')
 
 
 def send_keys_slowly(element, text):
@@ -22,6 +26,15 @@ def set_text(element, text):
 def unique_number():
     return int(1000 * time.time())
 
+def unique_card_number_in_str(first_numeral_in_str):
+    random.seed()
+    str_time = str(unique_number())
+    card_number = first_numeral_in_str + str_time
+    for i in range(1, 16 - len(str_time)):
+        num = random.randint(0, 9)
+        card_number = card_number + str(num)
+    return card_number
+
 def generate_username():
     return "test_user_%s" % unique_number()
 
@@ -29,9 +42,42 @@ def generate_email(email_prefix):
     email = USER_EMAIL_TEMPLATE % (email_prefix, unique_number())
     return email
 
+def generate_card_number(card_type):
+    if card_type == 'Visa_hypepay':
+        card_number = unique_card_number_in_str('4')
+    elif card_type == 'MasterCards_hypepay':
+        card_number = unique_card_number_in_str('5')
+    elif card_type ==  'AmericanExpress_hypepay':
+        card_number = unique_card_number_in_str('3')
+    else:
+        pytest.fail('unknown card type in generate card number')
+    return  card_number
 
-User = collections.namedtuple('User', 'username password email')
-
+def generate_random_card(card_type):
+    if card_type == 'Visa_hypepay':
+        random_card = Card(
+            number=generate_card_number(card_type),
+            exp_month='03',
+            exp_year='2019',
+            cvc_code='111',
+            zip_postal_code='111111')
+    elif card_type == 'MasterCards_hypepay':
+        random_card = Card(
+            number=generate_card_number(card_type),
+            exp_month='03',
+            exp_year='19',
+            cvc_code='111',
+            zip_postal_code='111111')
+    elif card_type ==  'AmericanExpress_hypepay':
+        random_card = Card(
+            number=generate_card_number(card_type),
+            exp_month='03',
+            exp_year='19',
+            cvc_code='1111',
+            zip_postal_code='111111')
+    else:
+        pytest.fail('unknown card type in generate random card')
+    return random_card
 
 def create_user(email_prefix=''):
     user = User(username=generate_username(), password=TEST_PASSWORD, email=generate_email(email_prefix))
