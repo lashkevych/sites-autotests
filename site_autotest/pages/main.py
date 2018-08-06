@@ -24,6 +24,15 @@ class MainPage(object):
             pytest.fail('unknown reseller in open order page')
         return PaymentPage(self.driver)
 
+    def open_client_area_page(self):
+        if TEST_RESELLER == 'anonine':
+            self.driver.find_element_by_link_text('ACCOUNT').click()
+        elif TEST_RESELLER == 'box-pn':
+            self.driver.find_element_by_link_text('CLIENT AREA').click()
+        else:
+            pytest.fail('unknown reseller in open order page')
+        return ControlPanelPage(self.driver)
+
     def get_login_form(self):
         return LOGIN_FORMS[TEST_RESELLER](self.driver)
 

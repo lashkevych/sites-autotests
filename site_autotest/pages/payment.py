@@ -76,6 +76,8 @@ class PaymentPage(object):
         self.driver.find_element_by_xpath("//div[contains(@class, 'signup')]//a[contains(@class, 'btn')]").click()
         return CompleteSignUpPage(self.driver)
 
+    def not_agree_complete_sign_up(self):
+        self.driver.find_element_by_css_selector("a.logo").click()
 
     def is_element_present(self, how, what):
         try:
@@ -86,5 +88,7 @@ class PaymentPage(object):
 
     def uncheck_subscription(self):
         self.driver.find_element_by_xpath("//label[contains(@for, 'enable-subscription-checkbox')]").click()
+
+
 
 #get_attribute("attribute name")
