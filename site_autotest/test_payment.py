@@ -10,8 +10,8 @@ from site_autotest.utils import *
 
 class TestPayment(object):
     @pytest.fixture(autouse=True)
-    def setup_method(self, selenium):
-        self.driver = selenium
+    def setup_method(self, driver_fixture):
+        self.driver = driver_fixture
         self.main_page = MainPage(self.driver)
         self.main_page.open()
 

@@ -4,11 +4,11 @@ import pytest
 from site_autotest.pages.main import *
 from site_autotest.utils import *
 
-
 class TestLogin(object):
     @pytest.fixture(autouse=True)
-    def setup_method(self, selenium):
-        self.driver = selenium
+    def setup_method(self, driver_fixture):
+        self.driver = driver_fixture
+        #self.driver.set_window_size(300, 500)
         self.main_page = MainPage(self.driver)
         self.main_page.open()
         self.login_form = self.main_page.get_login_form()
