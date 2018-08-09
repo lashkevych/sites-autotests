@@ -3,7 +3,7 @@ import time
 import pytest
 
 from site_autotest.config import TEST_RESELLER
-from site_autotest.settings import SITE_URL, DELAY_BETWEEN_ATTEMPTS
+from site_autotest.settings import SITE_URL_CHROME_FIREFOX,DELAY_BETWEEN_ATTEMPTS
 from site_autotest.pages.control_panel import ControlPanelPage
 from site_autotest.pages.payment import PaymentPage
 
@@ -13,7 +13,7 @@ class MainPage(object):
         self.driver = driver
 
     def open(self):
-        self.driver.get(SITE_URL)
+        self.driver.get(SITE_URL_CHROME_FIREFOX)
 
     def open_payment_page(self):
         if TEST_RESELLER == 'anonine':
@@ -37,6 +37,35 @@ class MainPage(object):
         return LOGIN_FORMS[TEST_RESELLER](self.driver)
 
 
+class AnonineResetPasswordForm(object):
+    def __init__(self, driver):
+        self.driver = driver
+
+    def send_reset_link(self, username_or_email, password):
+        self.enter_username_or_email(username_or_email)
+        self.submit_reset_password()
+        return self.reset_link_is_sent_successfully()
+
+    def enter_username_or_email(self, username_or_email):
+        username_or_email_element = self.driver.find_element_by_id("username_or_email")
+        username_or_email_element.click()
+        username_or_email_element.clear()
+        username_or_email_element.send_keys(username_or_email)
+
+    def submit_reset_password(self):
+        self.driver.find_element_by_xpath("//form[@class='login_form']//button[@type='submit']").click()
+
+    def reset_link_is_sent_successfully(self):
+        if self.driver.find_element_by_xpath("//*[text()='Further instructions have been sent to your email address']"):
+            return True
+        else:
+            return False
+
+
+class BoxpnResetPasswordForm(object):
+    def __init__(self, driver):
+        self.driver = driver
+
 class AnonineLoginForm(object):
     def __init__(self, driver):
         self.driver = driver
@@ -50,6 +79,11 @@ class AnonineLoginForm(object):
     def open_login_form(self):
         self.driver.find_element_by_id("loginLink").click()
         time.sleep(DELAY_BETWEEN_ATTEMPTS)
+
+    def open_reset_form(self):
+        self.driver.find_element_by_link_text("Forgot your password?").click()
+        time.sleep(DELAY_BETWEEN_ATTEMPTS)
+        return AnonineResetPasswordForm(self.driver)
 
     def enter_username_or_email(self, username_or_email):
         username_or_email_element = self.driver.find_element_by_id("username_or_email")
