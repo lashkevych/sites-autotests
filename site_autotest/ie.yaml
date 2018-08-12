@@ -1,0 +1,16 @@
+use-basic-auth: False
+
+# More capabilites for IE driver are in selenium.webdriver.ie.options.Options
+capabilities:
+  # This is intended to start browser with clean session, but does not work
+  # https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver#multiple-instances-of-internetexplorerdriver
+  # Neither of this work.
+  ie.ensureCleanSession: true
+  #ie.forceCreateProcessApi: true
+  # Note: if I start browser with -private option manually it does start in private mode but then cannot open pages
+  #ie.browserCommandLineSwitches: '-private'
+
+# arguments to store detailed log of the IE web driver
+driver_kwargs:
+  log_file: 'ie-driver.log'
+  log_level: 'TRACE'

@@ -1,16 +1,19 @@
 import pytest
-from selenium import webdriver
 
 from site_autotest.settings import WAIT_TIMEOUT
-from site_autotest.utils import create_user
 
-from selenium import webdriver
 
 @pytest.fixture
-def driver_fixture(selenium):
+def driver_fixture(selenium, variables):
     selenium.implicitly_wait(WAIT_TIMEOUT)
     return selenium
 
-#def driver_fixture():
-#    return webdriver.Ie()
 
+@pytest.fixture
+def driver_kwargs(driver_kwargs, variables):
+    if 'driver_kwargs' in variables:
+        if driver_kwargs:
+            driver_kwargs.update(variables['driver_kwargs'])
+        else:
+            driver_kwargs = variables['driver_kwargs']
+    return driver_kwargs

@@ -3,17 +3,24 @@ import time
 import pytest
 
 from site_autotest.config import TEST_RESELLER
-from site_autotest.settings import SITE_URL_CHROME_FIREFOX,DELAY_BETWEEN_ATTEMPTS
+from site_autotest.settings import SITE_URL_WITH_BASIC_AUTH, SITE_URL_NO_BASIC_AUTH, DELAY_BETWEEN_ATTEMPTS
 from site_autotest.pages.control_panel import ControlPanelPage
 from site_autotest.pages.payment import PaymentPage
 
 
 class MainPage(object):
-    def __init__(self, driver):
+    def __init__(self, driver, variables):
         self.driver = driver
+        self.variables = variables
 
     def open(self):
-        self.driver.get(SITE_URL_CHROME_FIREFOX)
+        if self.variables.get('use-basic-auth', True):
+            self.driver.get(SITE_URL_WITH_BASIC_AUTH)
+        else:
+            self.driver.get(SITE_URL_NO_BASIC_AUTH)
+
+        # TODO: make configurable i.e. reseller dependent
+        self.driver.get(SITE_URL_NO_BASIC_AUTH + '/en/logout')
 
     def open_payment_page(self):
         if TEST_RESELLER == 'anonine':
