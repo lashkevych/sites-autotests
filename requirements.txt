@@ -5,3 +5,4 @@ pytest-selenium==1.12.0
 pytest-browsermob-proxy==0.1
 pytest-variables==1.7.1
 pytest-variables[yaml]==1.7.1
+beautifulsoup4==4.6.3

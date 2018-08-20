@@ -24,10 +24,4 @@ class TestLogin(object):
         self.assert_that_logout_link_exist()
 
     def assert_that_logout_link_exist(self):
-        if TEST_RESELLER == 'anonine':
-            self.driver.find_element_by_xpath("//a[@href='/en/logout']")
-        elif TEST_RESELLER == 'box-pn':
-            self.driver.find_element_by_xpath("//a[@href='/logout']")
-        else:
-            pytest.fail('unknown reseller in assert login test')
-#    pytest.fail('Account.text is empty ')
+        assert self.main_page.exit_login_link()
