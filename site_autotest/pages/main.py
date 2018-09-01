@@ -81,8 +81,6 @@ class AnonineLoginForm(object):
         time.sleep(DELAY_BETWEEN_ATTEMPTS)
 
     def open_login_form(self):
-        #self.driver.find_element_by_id("loginLink").click()
-        #self.driver.find_element_by_link_text("Sign Up").click()
         self.driver.find_element_by_css_selector("a[data-test='sign-in']").click()
         #login_link = "https://qa2-anonine.vpnsvc.com/en/login/"
         #script_open_window = "window.open('%s', 'new_window')" % login_link
@@ -91,30 +89,23 @@ class AnonineLoginForm(object):
         time.sleep(DELAY_BETWEEN_ATTEMPTS)
 
     def open_reset_form(self):
-        #self.driver.find_element_by_link_text("Forgot your password?").click()
-        #self.driver.find_element_by_link_text("Forgot password?").click()
         self.driver.find_element_by_css_selector("a[data-test='l-forgot-password']").click()
         time.sleep(DELAY_BETWEEN_ATTEMPTS)
         return RESET_PASSWORD_FORMS[TEST_RESELLER](self.driver)
 
     def enter_username_or_email(self, username_or_email):
-        #username_or_email_element = self.driver.find_element_by_id("username_or_email")
-        #username_or_email_element = self.driver.find_element_by_id("login")
         username_or_email_element = self.driver.find_element_by_css_selector("input[data-test='l-username-input']")
         username_or_email_element.click()
         username_or_email_element.clear()
         username_or_email_element.send_keys(username_or_email)
 
     def enter_password(self, password):
-        #password_element = self.driver.find_element_by_id("password")
         password_element = self.driver.find_element_by_css_selector("input[data-test='l-password-input']")
         password_element.click()
         password_element.clear()
         password_element.send_keys(password)
 
     def submit_login(self):
-        #self.driver.find_element_by_xpath("//form[@class='login_form']//button[@type='submit']").click()
-        #self.driver.find_element_by_xpath("//form//button[@type='submit']").click()
         self.driver.find_element_by_css_selector("button[data-test='l-submit']").click()
         return ControlPanelPage(self.driver)
 
