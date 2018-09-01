@@ -175,23 +175,18 @@ class AnonineResetPasswordForm(object):
         return self.reset_link_is_sent_successfully()
 
     def enter_username_or_email(self, username_or_email):
-        #username_or_email_element = self.driver.find_element_by_id("username_or_email")
         username_or_email_element = self.driver.find_element_by_css_selector("input[data-test='fp-input-username']")
         username_or_email_element.click()
         username_or_email_element.clear()
         username_or_email_element.send_keys(username_or_email)
 
     def submit_reset_password(self):
-        #self.driver.find_element_by_xpath("//form[@class='login_form']//button[@type='submit']").click()
-        #self.driver.find_element_by_xpath("//form//button[@type='submit']").click()
         self.driver.find_element_by_css_selector("button[data-test='fp-submit']").click()
 
     def go_to_login_form(self):
         self.driver.find_element_by_css_selector("a[data-test='link-to-login']").click()
 
     def reset_link_is_sent_successfully(self):
-        #if self.driver.find_element_by_xpath("//*[text()='Further instructions have been sent to your email address']"):
-        # if self.driver.find_element_by_xpath("//header[text()='Email was send']"):
         if self.driver.find_element_by_css_selector("div[data-test='fp-confirm-message']"):
             return True
         else:
