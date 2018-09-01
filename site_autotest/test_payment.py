@@ -97,10 +97,12 @@ class TestPayment(object):
     def login_random_exist_user (self, email_prefix):
         user = create_user(email_prefix)
         login_form = self.main_page.get_login_form()
+        login_form.open_login_form()
         return login_form.login(user.username, user.password)
 
     def login_exist_user (self, user):
         login_form = self.main_page.get_login_form()
+        login_form.open_login_form()
         return login_form.login(user.username, user.password)
 
     def assert_that_plans_are_equal(self, purchased_plan, last_plan):

@@ -16,12 +16,14 @@ class TestLogin(object):
         self.user = create_user()
 
     def test_login_using_username(self):
+        self.login_form.open_login_form()
         self.login_form.login(self.user.username, self.user.password)
         self.assert_that_logout_link_exist()
 
     def test_login_using_email(self):
+        self.login_form.open_login_form()
         self.login_form.login(self.user.email, self.user.password)
         self.assert_that_logout_link_exist()
 
     def assert_that_logout_link_exist(self):
-        assert self.main_page.exit_login_link()
+        assert self.main_page.exist_logout_link()

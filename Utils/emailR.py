@@ -32,7 +32,8 @@ class EmailServerWrapper(object):
             msg_to = msg['To']
             reset_password_subject = 'Anonine Password Reset Request'
             reset_password_link_text = 'RESET PASSWORD'
-            if (msg_subject.upper()==reset_password_subject.upper())& (msg_to==user_email):
+            #if (msg_subject.upper()==reset_password_subject.upper())& (msg_to==user_email):
+            if (msg_subject.upper() == reset_password_subject.upper()):
                 html_parts_list = self.parse(raw_message_string)
                 for k in (0, len(html_parts_list)):
                     parsed_html_part = BeautifulSoup(html_parts_list[k])
