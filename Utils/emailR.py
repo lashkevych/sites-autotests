@@ -18,9 +18,6 @@ class EmailServerWrapper(object):
     def close_connect_to_email_server(self):
         self.server.quit()
 
-    def confirm_email(self, email):
-        pass
-
     def get_reset_link(self, user_email):
         # list items on server
         resp, items, octets = self.server.list()
@@ -32,8 +29,7 @@ class EmailServerWrapper(object):
             msg_to = msg['To']
             reset_password_subject = 'Anonine Password Reset Request'
             reset_password_link_text = 'RESET PASSWORD'
-            #if (msg_subject.upper()==reset_password_subject.upper())& (msg_to==user_email):
-            if (msg_subject.upper() == reset_password_subject.upper()):
+            if (msg_subject.upper()==reset_password_subject.upper())& (msg_to==user_email):
                 html_parts_list = self.parse(raw_message_string)
                 for k in (0, len(html_parts_list)):
                     parsed_html_part = BeautifulSoup(html_parts_list[k])
@@ -43,7 +39,7 @@ class EmailServerWrapper(object):
                             return link.get('href')
 
 
-    def readMail(self):
+    '''def readMail(self):
         # list items on server
         resp, items, octets = self.server.list()
 
@@ -60,6 +56,7 @@ class EmailServerWrapper(object):
                 for link in soup.find_all('a'):
                     link_text = link.get_text()
                     #VERIFY MY EMAIL ADDRESS
+    '''
 
     def get_raw_message(self,raw_email):
         id, size = raw_email.split()

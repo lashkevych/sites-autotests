@@ -31,7 +31,8 @@ SITE_URL_NO_BASIC_AUTH = "https://%s/" % HOSTNAME
 
 WAIT_TIMEOUT = 30
 DELAY_BETWEEN_ATTEMPTS = 1
-DELAY_BEFORE_GETTING_EMAILS = 30
+DELAY_FOR_LOADING_PAGE = 1
+DELAY_BEFORE_GETTING_EMAILS = 10
 
 Card = collections.namedtuple('Card', 'number exp_month exp_year cvc_code zip_postal_code')
 
