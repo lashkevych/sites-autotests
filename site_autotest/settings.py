@@ -36,6 +36,7 @@ DELAY_BEFORE_GETTING_EMAILS = 10
 
 Card = collections.namedtuple('Card', 'number exp_month exp_year cvc_code zip_postal_code')
 
+'''
 CARDS = {
     'Visa_hypepay': Card(
         number='1234123412341234',
@@ -59,3 +60,4 @@ CARDS = {
         zip_postal_code='111111')
 
 }
+'''

@@ -6,7 +6,7 @@ from site_autotest.settings import SERVER
 
 import email
 
-class EmailServerWrapper(object):
+class EmailClientWrapper(object):
     def __init__(self, user, password):
         # connect to server
         self.server = poplib.POP3_SSL(SERVER)
