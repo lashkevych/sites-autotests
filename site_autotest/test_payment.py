@@ -19,7 +19,7 @@ class TestPayment(object):
         purchased_plan = '1 Month'
         payment_page = self.main_page.open_payment_page()
 
-        payment_page.make_payment_with_credit_card(purchased_plan, 'full_reg_1m_single', True, False, 'Visa_hypepay')
+        payment_page.make_payment_with_credit_card(purchased_plan, 'cc_full_reg_1m_single', True, False, 'Visa_hypepay')
         control_panel_page = self.complete_registration(payment_page)
 
         self.assert_that_plans_are_equal(purchased_plan, self.get_last_plan(control_panel_page))
@@ -28,14 +28,14 @@ class TestPayment(object):
         purchased_plan = '3 Months'
         payment_page = self.main_page.open_payment_page()
 
-        payment_page.make_payment_with_credit_card(purchased_plan, 'full_reg_3m_single', True, False, 'MasterCards_hypepay')
+        payment_page.make_payment_with_credit_card(purchased_plan, 'cc_full_reg_3m_single', True, False, 'MasterCards_hypepay')
         control_panel_page = self.complete_registration(payment_page)
 
         self.assert_that_plans_are_equal(purchased_plan, self.get_last_plan(control_panel_page))
 
     def test_single_payment_cc_by_existing_user_12m(self):
         purchased_plan = '12 Months'
-        control_panel_page = self.login_random_exist_user('exist_user_12m_single')
+        control_panel_page = self.login_random_exist_user('cc_exist_user_12m_single')
         payment_page = control_panel_page.open_payment_page()
 
         payment_page.make_payment_with_credit_card(purchased_plan, '', False, False, 'AmericanExpress_hypepay')
@@ -45,7 +45,7 @@ class TestPayment(object):
 
     def test_subscription_payment_cc_by_existing_user_12m(self):
         purchased_plan = '12 Months'
-        control_panel_page = self.login_random_exist_user('exist_user_12m_sub')
+        control_panel_page = self.login_random_exist_user('cc_exist_user_12m_sub')
         payment_page = control_panel_page.open_payment_page()
 
         payment_page.make_payment_with_credit_card(purchased_plan, '', False, True, 'Visa_hypepay')
@@ -56,7 +56,7 @@ class TestPayment(object):
 
     def test_renewal_payment_cc_by_existing_user(self):
         purchased_plan = '3 Months'
-        control_panel_page = self.login_random_exist_user('renewal_single_3m_sub_1m')
+        control_panel_page = self.login_random_exist_user('cc_renewal_single_3m_sub_1m')
         payment_page = control_panel_page.open_payment_page()
 
         payment_page.make_payment_with_credit_card(purchased_plan, '', False, False, 'Visa_hypepay')
@@ -77,10 +77,19 @@ class TestPayment(object):
         purchased_plan = '1 Month'
         payment_page = self.main_page.open_payment_page()
 
-        payment_page.make_payment_with_credit_card(purchased_plan, 'NOT-full_reg_1m_single', True, False, 'Visa_hypepay')
+        payment_page.make_payment_with_credit_card(purchased_plan, 'cc_NOT-full_reg_1m_single', True, False, 'Visa_hypepay')
         control_panel_page = self.not_complete_registration(payment_page)
 
         self.assert_that_logged_user_is_no_creds(control_panel_page)
+
+    def test_single_payment_pp_with_full_registration_1m(self):
+        purchased_plan = '1 Month'
+        payment_page = self.main_page.open_payment_page()
+
+        payment_page.make_payment_with_pay_pal(purchased_plan, 'pp_full_reg_1m_single', True, False)
+        control_panel_page = self.complete_registration(payment_page)
+
+        self.assert_that_plans_are_equal(purchased_plan, self.get_last_plan(control_panel_page))
 
     def complete_registration(self, payment_page):
         complete_user_sign_up_page = payment_page.agree_complete_sign_up()

@@ -11,13 +11,58 @@ class PaymentPage(object):
     def __init__(self, driver):
         self.driver = driver
 
+    def make_payment_with_pay_pal(self, plan, email_prefix, is_enter_email=True, is_subscription=False):
+        if is_enter_email:
+            self.enter_email(email_prefix)
+        self.choose_plan(plan)
+        self.select_pp_payment_method()
+        if not is_subscription:
+            self.uncheck_pp_subscription()
+        self.submit_purchase()
+        time.sleep(DELAY_FOR_LOADING_PAGE)
+        self.enter_and_submit_pay_pal_creds()
+        time.sleep(DELAY_FOR_LOADING_PAGE*4)
+        time.sleep(DELAY_BEFORE_GETTING_EMAILS*2)
+        self.confirm_pay_pal_payment()
+        time.sleep(DELAY_FOR_LOADING_PAGE)
+        time.sleep(DELAY_BEFORE_GETTING_EMAILS*2)
+        self.return_to_merchant()
+
+    def enter_and_submit_pay_pal_creds(self):
+        self.enter_pay_pal_email()
+        self.enter_pay_pal_password()
+        self.submit_pay_pal_creds()
+
+    def confirm_pay_pal_payment(self):
+        self.driver.find_element_by_xpath("//input[@data-test-id='continueButton']").click()
+
+    def return_to_merchant(self):
+        self.driver.find_element_by_xpath("//input[@value='Return to Merchant']").click()
+
+    def enter_pay_pal_email(self):
+        pay_pal_email_element = self.driver.find_element_by_xpath("//input[@name='login_email']")
+        set_text(pay_pal_email_element, QA_PAY_PAL_EMAIL)
+
+    def enter_pay_pal_password(self):
+        pay_pal_password_element = self.driver.find_element_by_xpath("//input[@name='login_password']")
+        set_text(pay_pal_password_element, QA_PAY_PAL_PASSWORD)
+
+    def submit_pay_pal_creds(self):
+        self.driver.find_element_by_xpath("//button[@value='Login']").click()
+
+    def select_pp_payment_method(self):
+        self.driver.find_element_by_class_name('paypal').click()
+
+    def uncheck_pp_subscription(self):
+        self.driver.find_element_by_xpath("//label[@for='enable-subscription']").click()
+
     def make_payment_with_credit_card(self, plan, email_prefix, is_enter_email=True, is_subscription=False,  card_type='Visa_hypepay'):
         if is_enter_email:
             self.enter_email(email_prefix)
         self.choose_plan(plan)
         self.select_cc_payment_method()
         if not is_subscription:
-            self.uncheck_subscription()
+            self.uncheck_cc_subscription()
         random_card = generate_random_card(card_type)
         self.enter_card_data(random_card)
         self.submit_purchase()
@@ -86,7 +131,7 @@ class PaymentPage(object):
             return False
         return True
 
-    def uncheck_subscription(self):
+    def uncheck_cc_subscription(self):
         self.driver.find_element_by_xpath("//label[contains(@for, 'enable-subscription-checkbox')]").click()
 
 
