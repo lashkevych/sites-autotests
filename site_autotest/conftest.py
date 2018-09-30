@@ -5,7 +5,7 @@ from site_autotest.settings import WAIT_TIMEOUT
 
 @pytest.fixture
 def driver_fixture(selenium, variables):
-    selenium.implicitly_wait(WAIT_TIMEOUT)
+    selenium.implicitly_wait(WAIT_TIMEOUT) # seconds
     return selenium
 
 

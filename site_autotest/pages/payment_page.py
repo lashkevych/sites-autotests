@@ -1,40 +1,35 @@
-from time import sleep
-
-from selenium.webdriver.support.ui import Select
-
-from site_autotest.settings import *
 from site_autotest.utils import *
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
-
-class PaymentPage(object):
+class PayPalPaymentPage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def make_payment_with_pay_pal(self, plan, email_prefix, is_enter_email=True, is_subscription=False):
-        if is_enter_email:
-            self.enter_email(email_prefix)
-        self.choose_plan(plan)
-        self.select_pp_payment_method()
-        if not is_subscription:
-            self.uncheck_pp_subscription()
-        self.submit_purchase()
-        time.sleep(DELAY_FOR_LOADING_PAGE)
-        self.enter_and_submit_pay_pal_creds()
-        time.sleep(DELAY_FOR_LOADING_PAGE*4)
-        time.sleep(DELAY_BEFORE_GETTING_EMAILS*2)
-        self.confirm_pay_pal_payment()
-        time.sleep(DELAY_FOR_LOADING_PAGE)
-        time.sleep(DELAY_BEFORE_GETTING_EMAILS*2)
-        self.return_to_merchant()
+        method = EC.element_to_be_clickable((By.XPATH, "//input[@name='login_email']"))
+        wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
+                                 'Timed out waiting for Pay Pal Payment Page to load')
 
     def enter_and_submit_pay_pal_creds(self):
         self.enter_pay_pal_email()
         self.enter_pay_pal_password()
         self.submit_pay_pal_creds()
 
+        method = EC.visibility_of_element_located((By.ID , "preloaderSpinner"))
+        wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
+                                 'Timed out waiting for Confirm Pay Pal Payment Page to load', False)
+
     def confirm_pay_pal_payment(self):
         self.driver.find_element_by_xpath("//input[@data-test-id='continueButton']").click()
+
+        self.driver.find_element_by_xpath("//input[@data-test-id='continueButton']").click()
+
+        #method = EC.element_to_be_clickable((By.XPATH, "//input[@value='Return to Merchant']"))
+        #wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
+        #                         'Timed out waiting for Return to Merchant Page to load')
+        method = EC.visibility_of_element_located((By.ID, "preloaderSpinner"))
+        wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
+                 'Timed out waiting for Return to Merchant Page to load', False)
 
     def return_to_merchant(self):
         self.driver.find_element_by_xpath("//input[@value='Return to Merchant']").click()
@@ -49,6 +44,24 @@ class PaymentPage(object):
 
     def submit_pay_pal_creds(self):
         self.driver.find_element_by_xpath("//button[@value='Login']").click()
+
+
+class PaymentPage(object):
+    def __init__(self, driver):
+        self.driver = driver
+
+    def make_payment_with_pay_pal(self, plan, email_prefix, is_enter_email=True, is_subscription=False):
+        if is_enter_email:
+            self.enter_email(email_prefix)
+        self.choose_plan(plan)
+        self.select_pp_payment_method()
+        if not is_subscription:
+            self.uncheck_pp_subscription()
+        self.submit_purchase()
+        pay_pal_payment_page = PayPalPaymentPage(self.driver)
+        pay_pal_payment_page.enter_and_submit_pay_pal_creds()
+        pay_pal_payment_page.confirm_pay_pal_payment()
+        pay_pal_payment_page.return_to_merchant()
 
     def select_pp_payment_method(self):
         self.driver.find_element_by_class_name('paypal').click()
@@ -112,28 +125,21 @@ class PaymentPage(object):
         self.driver.find_element_by_xpath("//button[contains(@class, 'card-v2__btn-purchase')]").click()
 
     def agree_go_to_account(self):
-        from site_autotest.pages.control_panel import ControlPanelPage
+        from site_autotest.pages.client_area_page import ClientAreaPage
         self.driver.find_element_by_xpath("//div[contains(@class, 'signup')]//a[contains(@class, 'btn')]").click()
-        return ControlPanelPage(self.driver)
+        client_area_page = ClientAreaPage(self.driver)
+
+        return client_area_page
 
     def agree_complete_sign_up(self):
-        from site_autotest.pages.user_sign_up import CompleteSignUpPage
+        from site_autotest.pages.user_sign_up_page import CompleteSignUpPage
         self.driver.find_element_by_xpath("//div[contains(@class, 'signup')]//a[contains(@class, 'btn')]").click()
-        return CompleteSignUpPage(self.driver)
+        complete_signup_page = CompleteSignUpPage(self.driver)
 
-    def not_agree_complete_sign_up(self):
+        return complete_signup_page
+
+    def not_agree_complete_sign_up(self, main_page):
         self.driver.find_element_by_css_selector("a.logo").click()
-
-    def is_element_present(self, how, what):
-        try:
-            self.driver.find_element(by=how, value=what)
-        except NoSuchElementException as e:
-            return False
-        return True
 
     def uncheck_cc_subscription(self):
         self.driver.find_element_by_xpath("//label[contains(@for, 'enable-subscription-checkbox')]").click()
-
-
-
-#get_attribute("attribute name")

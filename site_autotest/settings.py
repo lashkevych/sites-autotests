@@ -29,10 +29,15 @@ SITE_URL_WITH_BASIC_AUTH = "https://%s:%s@%s/" % (SITE_BASIC_AUTH_USERNAME, SITE
 #  for Edge and IE
 SITE_URL_NO_BASIC_AUTH = "https://%s/" % HOSTNAME
 
+# Implicit Waits
 WAIT_TIMEOUT = 30
-DELAY_BETWEEN_ATTEMPTS = 1
-DELAY_FOR_LOADING_PAGE = 1
+
+# Explicit Waits
+DELAY_FOR_LOADING_PAGE = 60
+DELAY_FOR_PAY_PAL_PAGE = 60
+
 DELAY_BEFORE_GETTING_EMAILS = 10
+DELAY_BETWEEN_ATTEMPTS = 1
 
 Card = collections.namedtuple('Card', 'number exp_month exp_year cvc_code zip_postal_code')
 

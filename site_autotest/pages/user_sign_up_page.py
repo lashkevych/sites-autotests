@@ -1,17 +1,18 @@
 from site_autotest.config import TEST_PASSWORD
 from site_autotest.utils import set_text, generate_username
-
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class CompleteSignUpPage(object):
     def __init__(self, driver):
         self.driver = driver
 
     def complete_user_sign_up(self):
-        from site_autotest.pages.control_panel import ControlPanelPage
+        from site_autotest.pages.client_area_page import ClientAreaPage
         self.enter_username()
         self.enter_and_confirm_password()
         self.submit_creds()
-        return ControlPanelPage(self.driver)
+        return ClientAreaPage(self.driver)
 
     def submit_creds(self):
         self.driver.find_element_by_xpath("//button[@type='submit']").click()

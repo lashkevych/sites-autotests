@@ -1,6 +1,10 @@
-from time import sleep
 
-from site_autotest.settings import DELAY_BETWEEN_ATTEMPTS
+import pytest
+from site_autotest.utils import wait_for
+from site_autotest.config import TEST_RESELLER
+from site_autotest.settings import DELAY_FOR_LOADING_PAGE
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
 class ProfilePage(object):
@@ -22,44 +26,44 @@ class ProfilePage(object):
         else:
             return False
 
-class ControlPanelPage(object):
+class ClientAreaPage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def open(self):
-        self.driver.find_element_by_link_text('CONTROL PANEL').click()
-
-    #ACCOUNT
-
     def open_payment_page(self):
-        from site_autotest.pages.payment import PaymentPage
+        from site_autotest.pages.payment_page import PaymentPage
         self.driver.find_element_by_partial_link_text('UPGRADE').click()
-        sleep(DELAY_BETWEEN_ATTEMPTS+1)
-        return PaymentPage(self.driver)
+        payment_page = PaymentPage(self.driver)
+
+        return payment_page
 
     def open_profile_page(self):
-        #self.driver.find_element_by_partial_link_text('PROFILE').click()
         el = self.driver.find_element_by_class_name('dashboard-content')
         el.find_element_by_partial_link_text('PROFILE').click()
+        profile_page = ProfilePage(self.driver)
 
-        sleep(DELAY_BETWEEN_ATTEMPTS+1)
-        return ProfilePage(self.driver)
+        return profile_page
 
     def open_profile_page_no_creds_user(self):
         el = self.driver.find_element_by_xpath("//a//div[text()='Profile']")
         el = el.find_element_by_xpath('..')
         el.click()
+        profile_page = ProfilePage(self.driver)
 
-        sleep(DELAY_BETWEEN_ATTEMPTS+1)
-        return ProfilePage(self.driver)
+        return profile_page
+
+    def get_last_plan(self):
+        profile_page = self.open_profile_page()
+        return profile_page.get_last_plan()
 
     def exist_logout_link(self):
         try:
-            self.driver.find_element_by_xpath("//a[@href='/en/logout']")
+            if TEST_RESELLER == 'anonine':
+                self.driver.find_element_by_xpath("//a[@href='/en/logout']")
+            elif TEST_RESELLER == 'box-pn':
+                self.driver.find_element_by_xpath("//a[@href='/logout']")
+            else:
+                pytest.fail('Unknown reseller in check if exist logout link')
             return True
         except:
             return False
-
-
-
-

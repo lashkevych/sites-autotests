@@ -3,12 +3,11 @@ import time
 import pytest
 
 from site_autotest.config import *
-from site_autotest.settings import SITE_URL_WITH_BASIC_AUTH, SITE_URL_NO_BASIC_AUTH, \
-    DELAY_FOR_LOADING_PAGE
-from site_autotest.pages.control_panel import ControlPanelPage
-from site_autotest.pages.payment import PaymentPage
+from site_autotest.utils import wait_for, click_with_waiting_page_reload
+from site_autotest.settings import SITE_URL_WITH_BASIC_AUTH, SITE_URL_NO_BASIC_AUTH
+from site_autotest.pages.client_area_page import ClientAreaPage
+from site_autotest.pages.payment_page import PaymentPage
 from Utils.emailR import EmailClientWrapper
-
 
 class MainPage(object):
     def __init__(self, driver, variables):
@@ -30,30 +29,34 @@ class MainPage(object):
     def open_payment_page(self):
         if TEST_RESELLER == 'anonine':
             self.driver.find_element_by_css_selector("a[data-test='buy']").click()
+            payment_page = PaymentPage(self.driver)
+            return payment_page
         else:
-            pytest.fail('unknown reseller in open order page')
-        return PaymentPage(self.driver)
+            pytest.fail('Unknown reseller in open order page')
 
     def open_client_area_page(self):
         if TEST_RESELLER == 'anonine':
-            self.driver.find_element_by_css_selector("a[data-test='sign-in']").click()
+            method = lambda: self.driver.find_element_by_css_selector("a[data-test='sign-in']")
+            click_with_waiting_page_reload(method)
+            client_area_page = ClientAreaPage(self.driver)
+            return client_area_page
+
         else:
-            pytest.fail('unknown reseller in open client area page')
-        return ControlPanelPage(self.driver)
+            pytest.fail('Unknown reseller in open client area page')
 
     def open_login_page(self):
         if TEST_RESELLER == 'anonine':
             self.driver.find_element_by_css_selector("a[data-test='sign-in']").click()
-            time.sleep(DELAY_FOR_LOADING_PAGE)
-            return AnonineLoginPage(self.driver)
+            login_page = AnonineLoginPage(self.driver)
+            return login_page
         else:
-            pytest.fail('unknown reseller in open order page')
+            pytest.fail('Unknown reseller in open login page')
 
     def get_new_password_page(self):
         if TEST_RESELLER == 'anonine':
             return AnonineEnterNewPasswordPage(self.driver)
         else:
-            pytest.fail('unknown reseller in get new password page')
+            pytest.fail('Unknown reseller in get new password page')
 
 
     def exist_logout_link(self):
@@ -62,7 +65,7 @@ class MainPage(object):
         elif TEST_RESELLER == 'box-pn':
             self.driver.find_element_by_xpath("//a[@href='/logout']")
         else:
-            pytest.fail('unknown reseller in assert login test')
+            pytest.fail('Unknown reseller in assert login test')
         return True
 
 class AnonineLoginPage(object):
@@ -72,12 +75,18 @@ class AnonineLoginPage(object):
     def login(self, username_or_email, password):
         self.enter_username_or_email(username_or_email)
         self.enter_password(password)
-        return self.submit_login()
+        client_area_page = self.submit_login()
+        return client_area_page
+
+    def can_not_login(self, username_or_email, password):
+        self.enter_username_or_email(username_or_email)
+        self.enter_password(password)
+        self.submit_login()
 
     def open_reset_password_page(self):
         self.driver.find_element_by_css_selector("a[data-test='l-forgot-password']").click()
-        time.sleep(DELAY_FOR_LOADING_PAGE)
-        return AnonineResetPasswordPage(self.driver)
+        reset_password_page = AnonineResetPasswordPage(self.driver)
+        return reset_password_page
 
     def enter_username_or_email(self, username_or_email):
         username_or_email_element = self.driver.find_element_by_css_selector("input[data-test='l-username-input']")
@@ -93,7 +102,7 @@ class AnonineLoginPage(object):
 
     def submit_login(self):
         self.driver.find_element_by_css_selector("button[data-test='l-submit']").click()
-        return ControlPanelPage(self.driver)
+        return ClientAreaPage(self.driver)
 
     def exist_signin_button(self):
         if TEST_RESELLER == 'anonine':
@@ -120,7 +129,7 @@ class AnonineResetPasswordPage(object):
     def submit_reset_password(self):
         self.driver.find_element_by_css_selector("button[data-test='fp-submit']").click()
 
-    def go_to_login_form(self):
+    def go_to_login_page(self):
         self.driver.find_element_by_css_selector("a[data-test='link-to-login']").click()
 
     def reset_link_is_sent_successfully(self):

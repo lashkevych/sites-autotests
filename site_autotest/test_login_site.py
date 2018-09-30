@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from site_autotest.pages.main import *
+from site_autotest.pages.main_page import *
 from site_autotest.utils import *
 
 
@@ -15,19 +15,20 @@ class TestLogin(object):
         self.user = create_user()
 
     def test_login_using_username(self):
-        self.login_form.login(self.user.username, self.user.password)
-        self.assert_that_logout_link_exist()
+        client_area_page = self.login_form.login(self.user.username, self.user.password)
+        self.assert_that_login_is_successful(client_area_page)
 
     def test_login_using_email(self):
-        self.login_form.login(self.user.email, self.user.password)
-        self.assert_that_logout_link_exist()
+        client_area_page = self.login_form.login(self.user.email, self.user.password)
+        self.assert_that_login_is_successful(client_area_page)
 
     def test_can_not_login_using_correct_username_and_incorrect_password(self):
-        self.login_form.login(self.user.username, self.user.password+'1')
+        #TODO change using data-test atribute
+        self.login_form.can_not_login(self.user.username, self.user.password+'1')
         self.assert_that_signin_button_exist()
+
+    def assert_that_login_is_successful(self, client_area_page):
+        assert client_area_page.exist_logout_link()
 
     def assert_that_signin_button_exist(self):
         assert self.login_form.exist_signin_button()
-
-    def assert_that_logout_link_exist(self):
-        assert self.main_page.exist_logout_link()
