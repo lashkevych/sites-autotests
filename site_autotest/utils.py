@@ -4,9 +4,12 @@ import time
 
 import pytest
 import requests
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
+from selenium.webdriver.support import expected_conditions
 
 
-from site_autotest.config import *
+
 from site_autotest.settings import *
 
 
@@ -93,3 +96,24 @@ def create_user(email_prefix=''):
         pytest.fail('unknown reseller in create user')
     #assert r.ok, r.text
     return user
+
+def wait_for(driver, time, method_for_executing, message, wait_until=True):
+    try:
+        if wait_until:
+            WebDriverWait(driver, time).until(method_for_executing)
+        else:
+            WebDriverWait(driver,time).until_not(method_for_executing)
+    except TimeoutException:
+        pytest.fail(message)
+
+def  click_with_waiting_page_reload(method):
+    max_waiting_time_sec = time.time()+ DELAY_FOR_LOADING_PAGE
+    while True:
+        try:
+            elem = method()
+            elem.click()
+            break
+        except StaleElementReferenceException:
+            if time.time()>= max_waiting_time_sec:
+                raise
+            time.sleep(10)

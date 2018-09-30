@@ -1,5 +1,4 @@
 import poplib
-from email.header import decode_header
 from bs4 import BeautifulSoup
 
 from site_autotest.settings import SERVER
@@ -37,26 +36,6 @@ class EmailClientWrapper(object):
                         link_text = link.get_text()
                         if link_text.upper()==reset_password_link_text.upper():
                             return link.get('href')
-
-
-    '''def readMail(self):
-        # list items on server
-        resp, items, octets = self.server.list()
-
-        for i in range(0, 10):
-            raw_message_string = self.get_raw_message(items[i])
-            msg = email.message_from_string(raw_message_string)
-            To = msg['To']
-            Subject = msg['subject']
-
-            html_parts_list = self.parse(raw_message_string)
-
-            for k in (0, len(html_parts_list)):
-                soup = BeautifulSoup(html_parts_list[k])
-                for link in soup.find_all('a'):
-                    link_text = link.get_text()
-                    #VERIFY MY EMAIL ADDRESS
-    '''
 
     def get_raw_message(self,raw_email):
         id, size = raw_email.split()
