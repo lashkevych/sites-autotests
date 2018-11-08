@@ -28,7 +28,8 @@ class MainPage(object):
 
     def open_payment_page(self):
         if TEST_RESELLER == 'anonine':
-            self.driver.find_element_by_css_selector("a[data-test='buy']").click()
+            #self.driver.find_element_by_css_selector("a[data-test='buy']").click()
+            self.driver.find_element_by_css_selector("a[test-attr='pricing']").click()
             payment_page = PaymentPage(self.driver)
             return payment_page
         else:

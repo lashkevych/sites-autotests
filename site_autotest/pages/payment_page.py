@@ -3,36 +3,51 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 class PayPalPaymentPage(object):
-    def __init__(self, driver):
+    def __init__(self, driver, is_subscription):
         self.driver = driver
 
-        method = EC.element_to_be_clickable((By.XPATH, "//input[@name='login_email']"))
+        if is_subscription:
+            self.pay_pal_wait_for('Timed out waiting for Start Pay Pal Payment Page to load')
+
+        '''if not is_subscription:
+            method = EC.element_to_be_clickable((By.XPATH, "//input[@name='login_email']"))
+        else:
+            method = EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']//span[contains(text(),'Check out')]/ancestor::button[1]"))
         wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
                                  'Timed out waiting for Pay Pal Payment Page to load')
+        '''
+
+    def confirm_subscription(self):
+        self.driver.find_element_by_xpath(
+            "//button[@type='submit']//span[contains(text(),'Check out')]/ancestor::button[1]").click()
+
+        self.pay_pal_wait_for('Timed out waiting for Login Pay Pal Payment Page to load')
 
     def enter_and_submit_pay_pal_creds(self):
         self.enter_pay_pal_email()
         self.enter_pay_pal_password()
         self.submit_pay_pal_creds()
 
-        method = EC.visibility_of_element_located((By.ID , "preloaderSpinner"))
-        wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
-                                 'Timed out waiting for Confirm Pay Pal Payment Page to load', False)
+        self.pay_pal_wait_for('Timed out waiting for Confirm Pay Pal Payment Page to load')
 
     def confirm_pay_pal_payment(self):
-        self.driver.find_element_by_xpath("//input[@data-test-id='continueButton']").click()
+        # specific paypal algorithm - Sometime first form is shown, sometime - second, sometime - both
+        # But I don't know algorithm
+        try:
+            self.driver.find_element_by_xpath("//button[contains(text(),'Continue')]").click()
+        except:
+            pass
 
-        self.driver.find_element_by_xpath("//input[@data-test-id='continueButton']").click()
+        try:
+            self.driver.find_element_by_xpath("//input[@data-test-id='continueButton']").click()
+        except:
+            pass
 
-        #method = EC.element_to_be_clickable((By.XPATH, "//input[@value='Return to Merchant']"))
-        #wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
-        #                         'Timed out waiting for Return to Merchant Page to load')
-        method = EC.visibility_of_element_located((By.ID, "preloaderSpinner"))
-        wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
-                 'Timed out waiting for Return to Merchant Page to load', False)
+        self.pay_pal_wait_for('Timed out waiting for Return to Merchant Page to load')
 
     def return_to_merchant(self):
         self.driver.find_element_by_xpath("//input[@value='Return to Merchant']").click()
+        self.pay_pal_wait_for('Timed out waiting for Pay pal redirect to Merchant Page')
 
     def enter_pay_pal_email(self):
         pay_pal_email_element = self.driver.find_element_by_xpath("//input[@name='login_email']")
@@ -45,6 +60,10 @@ class PayPalPaymentPage(object):
     def submit_pay_pal_creds(self):
         self.driver.find_element_by_xpath("//button[@value='Login']").click()
 
+    def pay_pal_wait_for(self, message):
+        method = EC.visibility_of_element_located((By.ID, "preloaderSpinner"))
+        wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
+                 message, False)
 
 class PaymentPage(object):
     def __init__(self, driver):
@@ -58,7 +77,9 @@ class PaymentPage(object):
         if not is_subscription:
             self.uncheck_pp_subscription()
         self.submit_purchase()
-        pay_pal_payment_page = PayPalPaymentPage(self.driver)
+        pay_pal_payment_page = PayPalPaymentPage(self.driver, is_subscription)
+        if is_subscription:
+            pay_pal_payment_page.confirm_subscription()
         pay_pal_payment_page.enter_and_submit_pay_pal_creds()
         pay_pal_payment_page.confirm_pay_pal_payment()
         pay_pal_payment_page.return_to_merchant()

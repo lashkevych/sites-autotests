@@ -11,11 +11,20 @@ class ProfilePage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def get_last_plan(self):
+    def get_last_paid_plan(self):
         return self.driver.find_element_by_xpath("//table[@class = 'table-history-body']/tbody/tr[1]/td[2]").text
 
-    def exist_subscription(self):
+    def get_last_payment_method(self):
+        return self.driver.find_element_by_xpath("//table[@class = 'table-history-body']/tbody/tr[1]/td[4]").text
+
+    def exist_cc_subscription(self):
         if self.driver.find_element_by_xpath("//a[@id='cancel_inovio_subscription']"):
+            return True
+        else:
+            return False
+
+    def exist_pp_subscription(self):
+        if self.driver.find_element_by_xpath("//a[@href='https://www.paypal.com/']"):
             return True
         else:
             return False
@@ -52,9 +61,9 @@ class ClientAreaPage(object):
 
         return profile_page
 
-    def get_last_plan(self):
+    def get_last_paid_plan_and_payment_method(self):
         profile_page = self.open_profile_page()
-        return profile_page.get_last_plan()
+        return (profile_page.get_last_paid_plan(),profile_page.get_last_payment_method())
 
     def exist_logout_link(self):
         try:
