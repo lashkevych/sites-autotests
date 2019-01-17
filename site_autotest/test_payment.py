@@ -41,7 +41,7 @@ class TestPayment(object):
     def test_single_payment_cc_by_existing_user_12m(self):
         purchased_plan = '12 Months'
         payment_method = 'Inovio'
-        client_area_page = self.login_random_exist_user('cc_exist_user_12m_single')
+        client_area_page, _ = self.main_page.login_random_exist_user('cc_exist_user_12m_single')
         payment_page = client_area_page.open_payment_page()
 
         payment_page.make_payment_with_credit_card(purchased_plan, '', False, False, 'AmericanExpress_hypepay')
@@ -54,7 +54,7 @@ class TestPayment(object):
     def test_subscription_payment_cc_by_existing_user_12m(self):
         purchased_plan = '12 Months'
         payment_method = 'Inovio'
-        client_area_page = self.login_random_exist_user('cc_exist_user_12m_sub')
+        client_area_page, _ = self.main_page.login_random_exist_user('cc_exist_user_12m_sub')
         payment_page = client_area_page.open_payment_page()
 
         payment_page.make_payment_with_credit_card(purchased_plan, '', False, True, 'Visa_hypepay')
@@ -68,7 +68,7 @@ class TestPayment(object):
     def test_renewal_payment_cc_by_existing_user(self):
         purchased_plan = '3 Months'
         payment_method = 'Inovio'
-        client_area_page = self.login_random_exist_user('cc_renewal_single_3m_sub_1m')
+        client_area_page, _ = self.main_page.login_random_exist_user('cc_renewal_single_3m_sub_1m')
         payment_page = client_area_page.open_payment_page()
 
         payment_page.make_payment_with_credit_card(purchased_plan, '', False, False, 'Visa_hypepay')
@@ -116,7 +116,7 @@ class TestPayment(object):
         purchased_plan = '3 Months'
         payment_method = 'Inovio'
 
-        client_area_page = self.login_random_exist_user('renewal_single_3m_cc_single_1m_pp')
+        client_area_page, _ = self.main_page.login_random_exist_user('renewal_single_3m_cc_single_1m_pp')
         payment_page = client_area_page.open_payment_page()
 
         payment_page.make_payment_with_credit_card(purchased_plan, '', False, False, 'Visa_hypepay')
@@ -133,8 +133,8 @@ class TestPayment(object):
         payment_page.make_payment_with_pay_pal(purchased_plan, '', False, True)
         client_area_page = payment_page.agree_go_to_account()
 
-        # sleep should be changed to using function wait_for  - in all test before checking payments
-        time.sleep(DELAY_BEFORE_GETTING_EMAILS*6)
+        # sleep should be changed to using function wait_for  - in all test
+        time.sleep(DELAY_BEFORE_GETTING_EMAILS*10)
         last_plan, last_payment_method = client_area_page.get_last_paid_plan_and_payment_method()
         self.assert_that_plans_are_equal(purchased_plan, last_plan)
         self.assert_that_payment_methods_are_equal(payment_method, last_payment_method)
@@ -147,17 +147,6 @@ class TestPayment(object):
     def not_complete_registration(self, payment_page, main_page):
         payment_page.not_agree_complete_sign_up(main_page)
         return self.main_page.open_client_area_page()
-
-    #TBD - need to move to main page
-    def login_random_exist_user (self, email_prefix):
-        user = create_user(email_prefix)
-        login_form = self.main_page.open_login_page()
-        return login_form.login(user.username, user.password)
-
-    # TBD - need to move to main page
-    def login_exist_user (self, user):
-        login_form = self.main_page.open_login_page()
-        return login_form.login(user.username, user.password)
 
     def assert_that_plans_are_equal(self, purchased_plan, last_plan):
         assert purchased_plan.upper() == last_plan.upper()

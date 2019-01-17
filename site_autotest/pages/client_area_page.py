@@ -12,10 +12,10 @@ class ProfilePage(object):
         self.driver = driver
 
     def get_last_paid_plan(self):
-        return self.driver.find_element_by_xpath("//table[@class = 'table-history-body']/tbody/tr[1]/td[2]").text
+        return self.driver.find_element_by_xpath("//table[@class = 'table-history-body']/tbody/tr[2]/td[2]").text
 
     def get_last_payment_method(self):
-        return self.driver.find_element_by_xpath("//table[@class = 'table-history-body']/tbody/tr[1]/td[4]").text
+        return self.driver.find_element_by_xpath("//table[@class = 'table-history-body']/tbody/tr[2]/td[4]").text
 
     def exist_cc_subscription(self):
         if self.driver.find_element_by_xpath("//a[@id='cancel_inovio_subscription']"):

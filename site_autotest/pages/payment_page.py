@@ -86,9 +86,12 @@ class PaymentPage(object):
 
     def select_pp_payment_method(self):
         self.driver.find_element_by_class_name('paypal').click()
+        method = EC.visibility_of_element_located((By.CSS_SELECTOR, "label[for='enable-subscription']"))
+        wait_for(self.driver, DELAY_FOR_PAY_PAL_PAGE, method,
+                 "Timed out waiting for Pay Pal Payment Method Page to load")
 
     def uncheck_pp_subscription(self):
-        self.driver.find_element_by_xpath("//label[@for='enable-subscription']").click()
+        self.driver.find_element_by_css_selector("label[for='enable-subscription']").click()
 
     def make_payment_with_credit_card(self, plan, email_prefix, is_enter_email=True, is_subscription=False,  card_type='Visa_hypepay'):
         if is_enter_email:

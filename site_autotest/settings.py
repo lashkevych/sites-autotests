@@ -3,6 +3,11 @@ import collections
 from .config import *
 
 HOSTNAMES = {
+    'qa1': {
+        'vpntunnel': "qa1-vpntunnel.vpnsvc.com",
+        'box-pn': 'qa1-boxpn.vpnsvc.com',
+        'anonine': 'qa1-anonine.vpnsvc.com'
+    },
     'qa2': {
         'vpntunnel': "qa2-vpntunnel.vpnsvc.com",
         'box-pn': 'qa2-boxpn.vpnsvc.com',

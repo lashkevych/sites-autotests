@@ -1,13 +1,12 @@
-import time
-
 import pytest
 
 from site_autotest.config import *
-from site_autotest.utils import wait_for, click_with_waiting_page_reload
+from site_autotest.utils import wait_for, click_with_waiting_page_reload, create_user
 from site_autotest.settings import SITE_URL_WITH_BASIC_AUTH, SITE_URL_NO_BASIC_AUTH
 from site_autotest.pages.client_area_page import ClientAreaPage
 from site_autotest.pages.payment_page import PaymentPage
 from Utils.emailR import EmailClientWrapper
+from site_autotest.pages.support_page import AnonineContactPage
 
 class MainPage(object):
     def __init__(self, driver, variables):
@@ -28,8 +27,7 @@ class MainPage(object):
 
     def open_payment_page(self):
         if TEST_RESELLER == 'anonine':
-            #self.driver.find_element_by_css_selector("a[data-test='buy']").click()
-            self.driver.find_element_by_css_selector("a[test-attr='pricing']").click()
+            self.driver.find_element_by_css_selector("a[data-test='pricing']").click()
             payment_page = PaymentPage(self.driver)
             return payment_page
         else:
@@ -50,6 +48,24 @@ class MainPage(object):
             self.driver.find_element_by_css_selector("a[data-test='sign-in']").click()
             login_page = AnonineLoginPage(self.driver)
             return login_page
+        else:
+            pytest.fail('Unknown reseller in open login page')
+
+    def login_random_exist_user(self, email_prefix):
+        user = create_user(email_prefix)
+        login_form = self.open_login_page()
+        return login_form.login(user.username, user.password), user
+
+    def login_exist_user(self, user):
+        login_form = self.open_login_page()
+        return login_form.login(user.username, user.password)
+
+
+    def open_contact_page(self):
+        if TEST_RESELLER == 'anonine':
+            self.driver.find_element_by_css_selector("a[data-test='footer-link-company-Contact us']").click()
+            contact_page = AnonineContactPage(self.driver)
+            return contact_page
         else:
             pytest.fail('Unknown reseller in open login page')
 
@@ -105,12 +121,13 @@ class AnonineLoginPage(object):
         self.driver.find_element_by_css_selector("button[data-test='l-submit']").click()
         return ClientAreaPage(self.driver)
 
-    def exist_signin_button(self):
+    def exist_password_error(self):
         if TEST_RESELLER == 'anonine':
-            self.driver.find_element_by_css_selector("button[data-test='l-submit']")
+            self.driver.find_element_by_css_selector("div[data-test='l-filed-err-password']")
         else:
             pytest.fail('there is no sign in link')
         return True
+
 
 class AnonineResetPasswordPage(object):
     def __init__(self, driver):
@@ -170,3 +187,4 @@ class AnonineEnterNewPasswordPage(object):
 
     def submit_new_password(self):
         self.driver.find_element_by_css_selector("button[data-test='up-submit']").click()
+
