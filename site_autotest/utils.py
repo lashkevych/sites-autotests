@@ -45,6 +45,9 @@ def generate_email(email_prefix):
     email = USER_EMAIL_TEMPLATE % (email_prefix, unique_number())
     return email
 
+def generate_user(email_prefix=''):
+    return User(username=generate_username(), password=TEST_PASSWORD, email=generate_email(email_prefix))
+
 def generate_card_number(card_type):
     if card_type == 'Visa_hypepay':
         card_number = unique_card_number_in_str('4')

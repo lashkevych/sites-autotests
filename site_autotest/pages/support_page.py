@@ -6,7 +6,7 @@ class AnonineContactPage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def send_message_to_support_by_anonymous_user(self, email, subject, message):
+    def send_message_to_support(self, email, subject, message):
         self.enter_email(email)
         self.enter_subject(subject)
         self.enter_message(message)

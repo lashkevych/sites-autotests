@@ -5,7 +5,7 @@ from site_autotest.utils import wait_for, click_with_waiting_page_reload, create
 from site_autotest.settings import SITE_URL_WITH_BASIC_AUTH, SITE_URL_NO_BASIC_AUTH
 from site_autotest.pages.client_area_page import ClientAreaPage
 from site_autotest.pages.payment_page import PaymentPage
-from Utils.emailR import EmailClientWrapper
+from Utils.emailR import AnonineEmailClientWrapper
 from site_autotest.pages.support_page import AnonineContactPage
 
 class MainPage(object):
@@ -161,8 +161,10 @@ class AnonineEnterNewPasswordPage(object):
         self.driver = driver
 
     def open(self, user_email):
-        email_client_wrapper = EmailClientWrapper(QA_EMAIL, QA_EMAIL_PASSWORD)
-        reset_link = email_client_wrapper.get_reset_link(user_email)
+        email_client_wrapper = AnonineEmailClientWrapper(QA_EMAIL, QA_EMAIL_PASSWORD)
+        subject = 'Anonine Password Reset Request'
+        link_text = 'RESET PASSWORD'
+        reset_link = email_client_wrapper.get_link(user_email, subject, link_text)
         script_open_window = "window.open('%s', 'new_window')" % reset_link
         self.driver.execute_script(script_open_window)
         self.driver.switch_to_window(self.driver.window_handles[1])

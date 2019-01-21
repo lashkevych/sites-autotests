@@ -2,6 +2,20 @@ from site_autotest.utils import *
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+class Payment(object):
+    def __init__(self, driver, payment_page):
+        self.driver = driver
+        self.payment_page = payment_page
+
+    def make_single_payment_with_credit_card_with_full_registration(self, user):
+        purchased_plan = '1 Month'
+        self.payment_page.make_payment_with_credit_card(purchased_plan, user.email, False,
+                                                       'Visa_hypepay')
+
+        complete_user_sign_up_page = self.payment_page.agree_complete_sign_up()
+        client_area_page = complete_user_sign_up_page.complete_user_sign_up(user)
+        return client_area_page
+
 class PayPalPaymentPage(object):
     def __init__(self, driver, is_subscription):
         self.driver = driver
@@ -69,9 +83,9 @@ class PaymentPage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def make_payment_with_pay_pal(self, plan, email_prefix, is_enter_email=True, is_subscription=False):
-        if is_enter_email:
-            self.enter_email(email_prefix)
+    def make_payment_with_pay_pal(self, plan, email, is_subscription=False):
+        if email:
+            self.enter_email(email)
         self.choose_plan(plan)
         self.select_pp_payment_method()
         if not is_subscription:
@@ -93,9 +107,9 @@ class PaymentPage(object):
     def uncheck_pp_subscription(self):
         self.driver.find_element_by_css_selector("label[for='enable-subscription']").click()
 
-    def make_payment_with_credit_card(self, plan, email_prefix, is_enter_email=True, is_subscription=False,  card_type='Visa_hypepay'):
-        if is_enter_email:
-            self.enter_email(email_prefix)
+    def make_payment_with_credit_card(self, plan, email, is_subscription=False,  card_type='Visa_hypepay'):
+        if email:
+            self.enter_email(email)
         self.choose_plan(plan)
         self.select_cc_payment_method()
         if not is_subscription:
@@ -130,8 +144,7 @@ class PaymentPage(object):
     def select_cc_payment_method(self):
         self.driver.find_element_by_class_name('hypepay').click()
 
-    def enter_email(self, email_prefix):
-        email = generate_email(email_prefix)
+    def enter_email(self, email):
         input_email_el = self.driver.find_element_by_xpath("//div[contains(@id, 'email-entry')]//input[@type='text']")
         set_text(input_email_el, email)
 
@@ -162,7 +175,7 @@ class PaymentPage(object):
 
         return complete_signup_page
 
-    def not_agree_complete_sign_up(self, main_page):
+    def not_agree_complete_sign_up(self):
         self.driver.find_element_by_css_selector("a.logo").click()
 
     def uncheck_cc_subscription(self):

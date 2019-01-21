@@ -35,6 +35,14 @@ class ProfilePage(object):
         else:
             return False
 
+    def correct_email(self, user):
+        str_for_find_username = "//b[text()='%s']" % user.username
+        self.driver.find_element_by_xpath(str_for_find_username)
+
+        str_for_find_email = "//b[text()='%s']"% user.email
+        if self.driver.find_element_by_xpath(str_for_find_email):
+            return True
+
 class ClientAreaPage(object):
     def __init__(self, driver):
         self.driver = driver
@@ -65,12 +73,13 @@ class ClientAreaPage(object):
         profile_page = self.open_profile_page()
         return (profile_page.get_last_paid_plan(),profile_page.get_last_payment_method())
 
+    def go_to_main_page(self):
+        self.driver.find_element_by_css_selector("a.logo").click()
+
     def exist_logout_link(self):
         try:
             if TEST_RESELLER == 'anonine':
                 self.driver.find_element_by_xpath("//a[@href='/en/logout']")
-            elif TEST_RESELLER == 'box-pn':
-                self.driver.find_element_by_xpath("//a[@href='/logout']")
             else:
                 pytest.fail('Unknown reseller in check if exist logout link')
             return True
