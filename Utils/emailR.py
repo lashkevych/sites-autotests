@@ -32,26 +32,7 @@ class AnonineEmailClientWrapper(object):
                         msg_link_text = link.get_text()
                         if msg_link_text.upper()==link_text.upper():
                             return link.get('href')
-
-    '''def get_reset_link(self, user_email):
-        # list items on server
-        resp, items, octets = self.server.list()
-
-        for i in range(0, len(items)):
-            raw_message_string = self.get_raw_message(items[i])
-            msg = email.message_from_string(raw_message_string)
-            msg_subject = msg['subject']
-            msg_to = msg['To']
-            reset_password_subject = 'Anonine Password Reset Request'
-            reset_password_link_text = 'RESET PASSWORD'
-            if (msg_subject.upper()==reset_password_subject.upper())& (msg_to==user_email):
-                html_parts_list = self.parse(raw_message_string)
-                for k in (0, len(html_parts_list)):
-                    parsed_html_part = BeautifulSoup(html_parts_list[k])
-                    for link in parsed_html_part.find_all('a'):
-                        link_text = link.get_text()
-                        if link_text.upper()==reset_password_link_text.upper():
-                            return link.get('href')'''
+        return None
 
     def get_raw_message(self,raw_email):
         id, size = raw_email.split()

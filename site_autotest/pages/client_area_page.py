@@ -1,15 +1,26 @@
 
 import pytest
-from site_autotest.utils import wait_for
 from site_autotest.config import TEST_RESELLER
-from site_autotest.settings import DELAY_FOR_LOADING_PAGE
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
+from site_autotest.utils import set_text
 
 
 class ProfilePage(object):
     def __init__(self, driver):
         self.driver = driver
+
+    def go_to_change_email_tab(self):
+        self.driver.find_element_by_css_selector("a[data-name='changepass']").click()
+
+    def change_email(self, new_email):
+        self.enter_email(new_email)
+        self.submit_email()
+
+    def enter_email(self,new_email):
+        email_element = self.driver.find_element_by_id("new_email")
+        set_text(email_element, new_email)
+
+    def submit_email(self):
+        self.driver.find_element_by_css_selector("input[value='Save email']").click()
 
     def get_last_paid_plan(self):
         return self.driver.find_element_by_xpath("//table[@class = 'table-history-body']/tbody/tr[2]/td[2]").text
@@ -42,6 +53,7 @@ class ProfilePage(object):
         str_for_find_email = "//b[text()='%s']"% user.email
         if self.driver.find_element_by_xpath(str_for_find_email):
             return True
+
 
 class ClientAreaPage(object):
     def __init__(self, driver):
