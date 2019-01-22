@@ -8,8 +8,24 @@ class ProfilePage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def go_to_change_email_tab(self):
+    def go_to_change_email_password_tab(self):
         self.driver.find_element_by_css_selector("a[data-name='changepass']").click()
+
+    def change_password(self, new_password):
+        self.enter_password(new_password)
+        self.enter_confirm_password(new_password)
+        self.submit_password()
+
+    def enter_password(self,new_password):
+        password_element = self.driver.find_element_by_id("password")
+        set_text(password_element, new_password)
+
+    def enter_confirm_password(self,new_password):
+        password_element = self.driver.find_element_by_id("passconfirm")
+        set_text(password_element, new_password)
+
+    def submit_password(self):
+        self.driver.find_element_by_css_selector("input[value='Save password']").click()
 
     def change_email(self, new_email):
         self.enter_email(new_email)
@@ -88,10 +104,15 @@ class ClientAreaPage(object):
     def go_to_main_page(self):
         self.driver.find_element_by_css_selector("a.logo").click()
 
+    def logout(self):
+        el = self.driver.find_element_by_class_name('dashboard-content')
+        el.find_element_by_partial_link_text('LOG OUT').click()
+
     def exist_logout_link(self):
         try:
             if TEST_RESELLER == 'anonine':
-                self.driver.find_element_by_xpath("//a[@href='/en/logout']")
+                el = self.driver.find_element_by_class_name('dashboard-content')
+                el.find_element_by_partial_link_text('LOG OUT')
             else:
                 pytest.fail('Unknown reseller in check if exist logout link')
             return True

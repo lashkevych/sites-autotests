@@ -44,7 +44,7 @@ class TestIdentification(object):
         client_area_page = payment.make_single_payment_with_credit_card_with_full_registration(user)
         profile_page = client_area_page.open_profile_page()
 
-        profile_page.go_to_change_email_tab()
+        profile_page.go_to_change_email_password_tab()
         user_with_new_email =  User(username=user.username, password=user.password, email=generate_email('confirm_email_after_change_email'))
         profile_page.change_email(user_with_new_email.email)
 
