@@ -136,7 +136,6 @@ class AnonineResetPasswordPage(object):
     def send_reset_link(self, username_or_email):
         self.enter_username_or_email(username_or_email)
         self.submit_reset_password()
-        return self.reset_link_is_sent_successfully()
 
     def enter_username_or_email(self, username_or_email):
         username_or_email_element = self.driver.find_element_by_css_selector("input[data-test='fp-input-username']")
@@ -153,8 +152,11 @@ class AnonineResetPasswordPage(object):
     def reset_link_is_sent_successfully(self):
         if self.driver.find_element_by_css_selector("div[data-test='fp-confirm-message']"):
             return True
-        else:
-            return False
+
+    def incorrect_email_or_username(self):
+        if self.driver.find_element_by_css_selector("div[data-test='fp-field-err-username']"):
+            return True
+
 
 class AnonineEnterNewPasswordPage(object):
     def __init__(self, driver):
