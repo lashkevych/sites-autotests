@@ -57,4 +57,4 @@ class TestIdentification(object):
 
     def assert_that_correct_email(self, client_area_page, user):
         profile_page = client_area_page.open_profile_page()
-        assert profile_page.correct_email(user)
+        assert profile_page.is_email_correct(user)

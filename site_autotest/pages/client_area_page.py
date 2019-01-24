@@ -2,6 +2,10 @@
 import pytest
 from site_autotest.config import TEST_RESELLER
 from site_autotest.utils import set_text
+from site_autotest.settings import MAXIMUM_ATTEMPTS_OF_CHECKING_PAY_PAL_REGISTRATION
+from site_autotest.settings import DELAY_BETWEEN_ATTEMPTS_OF_CHECKING_PAY_PAL_REGISTRATION
+from selenium.common.exceptions import NoSuchElementException
+import time
 
 
 class ProfilePage(object):
@@ -44,31 +48,34 @@ class ProfilePage(object):
     def get_last_payment_method(self):
         return self.driver.find_element_by_xpath("//table[@class = 'table-history-body']/tbody/tr[2]/td[4]").text
 
+    def exist_such_number_of_payments(self, number_of_payments):
+        path_str = "//table[@class = 'table-history-body']/tbody/tr[%s]/td[2]"%str(number_of_payments+1)
+        self.driver.find_element_by_xpath(path_str)
+        return True
+
     def exist_cc_subscription(self):
-        if self.driver.find_element_by_xpath("//a[@id='cancel_inovio_subscription']"):
-            return True
-        else:
-            return False
+        self.driver.find_element_by_xpath("//a[@id='cancel_inovio_subscription']")
+        return True
 
     def exist_pp_subscription(self):
-        if self.driver.find_element_by_xpath("//a[@href='https://www.paypal.com/']"):
-            return True
-        else:
-            return False
+        self.driver.find_element_by_xpath("//a[@href='https://www.paypal.com/']")
+        return True
 
-    def user_is_no_creds(self):
-        if self.driver.find_element_by_xpath("//input[@id='username']"):
-            return True
-        else:
-            return False
+    def is_user_no_creds(self):
+        self.driver.find_element_by_xpath("//input[@id='username']")
+        return True
 
-    def correct_email(self, user):
+    def is_available_resend_button(self):
+        self.driver.find_element_by_class("resend-email")
+        return True
+
+    def is_email_correct(self, user):
         str_for_find_username = "//b[text()='%s']" % user.username
         self.driver.find_element_by_xpath(str_for_find_username)
 
         str_for_find_email = "//b[text()='%s']"% user.email
-        if self.driver.find_element_by_xpath(str_for_find_email):
-            return True
+        self.driver.find_element_by_xpath(str_for_find_email)
+        return True
 
 
 class ClientAreaPage(object):
@@ -97,9 +104,20 @@ class ClientAreaPage(object):
 
         return profile_page
 
-    def get_last_paid_plan_and_payment_method(self):
+    def get_last_paid_plan_and_payment_method(self, number_of_payments = 1):
         profile_page = self.open_profile_page()
-        return (profile_page.get_last_paid_plan(),profile_page.get_last_payment_method())
+
+        for x in range(MAXIMUM_ATTEMPTS_OF_CHECKING_PAY_PAL_REGISTRATION):
+            try:
+                profile_page.exist_such_number_of_payments(number_of_payments)
+                break
+            except:
+                if x == MAXIMUM_ATTEMPTS_OF_CHECKING_PAY_PAL_REGISTRATION-1:
+                    #raise
+                    pytest.fail("Last payment is not registered")
+                time.sleep(DELAY_BETWEEN_ATTEMPTS_OF_CHECKING_PAY_PAL_REGISTRATION)
+                self.driver.refresh()
+        return (profile_page.get_last_paid_plan(), profile_page.get_last_payment_method())
 
     def go_to_main_page(self):
         self.driver.find_element_by_css_selector("a.logo").click()
@@ -118,3 +136,7 @@ class ClientAreaPage(object):
             return True
         except:
             return False
+
+    def is_registration_process_finished_successfully(self):
+        self.driver.find_element_by_class_name('flash-message-success')
+        return  True
