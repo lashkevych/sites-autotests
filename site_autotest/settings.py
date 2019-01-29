@@ -35,9 +35,12 @@ SITE_URL_WITH_BASIC_AUTH = "https://%s:%s@%s/" % (SITE_BASIC_AUTH_USERNAME, SITE
 SITE_URL_NO_BASIC_AUTH = "https://%s/" % HOSTNAME
 
 # Implicit Waits
+# seconds
 WAIT_TIMEOUT = 20
 
+
 # Explicit Waits
+# seconds
 DELAY_FOR_LOADING_PAGE = 60
 DELAY_FOR_PAY_PAL_PAGE = 60
 

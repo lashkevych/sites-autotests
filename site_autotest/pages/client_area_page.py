@@ -70,12 +70,9 @@ class ProfilePage(object):
         return True
 
     def is_email_correct(self, user):
-        str_for_find_username = "//b[text()='%s']" % user.username
-        self.driver.find_element_by_xpath(str_for_find_username)
-
-        str_for_find_email = "//b[text()='%s']"% user.email
-        self.driver.find_element_by_xpath(str_for_find_email)
-        return True
+        username = self.driver.find_element_by_css_selector("b[data-test='username']").text
+        email = self.driver.find_element_by_css_selector("b[data-test='email']").text
+        return (username == user.username) & (email == user.email)
 
 
 class ClientAreaPage(object):

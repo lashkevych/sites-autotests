@@ -112,12 +112,13 @@ class TestPayment(object):
         # registration of PayPal payment on the backend takes about 20-30 minutes ->
         # we do not wait for the end of this registration ->
         # we check only if the payment process is completed successfully
+        self.assert_that_payment_is_finished_successfully(client_area_page)
 
         #last_plan, last_payment_method = client_area_page.get_last_paid_plan_and_payment_method()
         #payment_method = 'Paypal'
         #self.assert_that_plans_are_equal(purchased_plan, last_plan)
         #self.assert_that_payment_methods_are_equal(payment_method, last_payment_method)
-        self.assert_that_payment_is_finished_successfully(client_area_page)
+
 
     def test_single_payment_pp_with_full_registration_1m(self):
         purchased_plan = '1 Month'

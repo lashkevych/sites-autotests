@@ -1,6 +1,6 @@
 import poplib
 from bs4 import BeautifulSoup
-
+from datetime import datetime, timedelta
 from site_autotest.settings import SERVER
 
 import email
@@ -19,10 +19,12 @@ class AnonineEmailClientWrapper(object):
 
     def get_link(self, user_email, subject, link_text):
         resp, items, octets = self.server.list()
-        for i in range(0, len(items)):
+        for i in reversed(range(0, len(items))):
             raw_message_string = self.get_raw_message(items[i])
             msg = email.message_from_string(raw_message_string)
             msg_subject = msg['subject']
+            #msg_date = datetime.strptime(msg['Date'], '%a, %d %b %Y %H:%M:%S %z')
+            #datetime.now() - timedelta(days=1)
             msg_to = msg['To']
             if (msg_subject.upper()==subject.upper())& (msg_to==user_email):
                 html_parts_list = self.parse(raw_message_string)
