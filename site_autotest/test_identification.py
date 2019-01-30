@@ -7,12 +7,11 @@ from site_autotest.utils import *
 
 def confirm_email(driver, user_email, subject):
     email_client_wrapper = AnonineEmailClientWrapper(QA_EMAIL, QA_EMAIL_PASSWORD)
-    link_text = 'VERIFY MY EMAIL ADDRESS'
-    confirm_email_link = email_client_wrapper.get_link(user_email, subject, link_text)
+    confirm_email_link = email_client_wrapper.get_link(user_email, subject, LINK_TEXT_FOR_CONFIRM_EMAIL)
     if bool(confirm_email_link):
         script_open_window = "window.open('%s', 'new_window')" % confirm_email_link
     else:
-        pytest.fail('there is no email to confirm')
+        pytest.fail('There is no email to confirm')
     driver.execute_script(script_open_window)
     driver.switch_to_window(driver.window_handles[0])
 
@@ -29,10 +28,7 @@ class TestIdentification(object):
         payment = Payment(self.driver, payment_page)
         client_area_page = payment.make_single_payment_with_credit_card_with_full_registration(user)
 
-        time.sleep(DELAY_BEFORE_GETTING_EMAILS)
-        # TBD  - need optimization of email count
-
-        confirm_email(self.driver, user.email, 'Thank you for your Interest in our Anonine Service!')
+        confirm_email(self.driver, user.email, SUBJECT_OF_CONFIRM_EMAIL_AFTER_PAYMENT)
 
         self.assert_that_correct_email(client_area_page, user)
 
@@ -48,10 +44,7 @@ class TestIdentification(object):
         user_with_new_email =  User(username=user.username, password=user.password, email=generate_email('confirm_email_after_change_email'))
         profile_page.change_email(user_with_new_email.email)
 
-        time.sleep(DELAY_BEFORE_GETTING_EMAILS)
-        # TBD  - need optimization of email count
-
-        confirm_email(self.driver, user_with_new_email.email, "Please Confirm your Email Address!")
+        confirm_email(self.driver, user_with_new_email.email, SUBJECT_OF_CONFIRM_EMAIL_AFTER_CHANGE_EMAIL)
 
         self.assert_that_correct_email(client_area_page, user_with_new_email)
 

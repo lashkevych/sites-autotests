@@ -19,13 +19,21 @@ class TestResetPassword(object):
         self.assert_that_reset_link_is_sent(reset_password_form)
         reset_password_form.go_to_login_page()
 
-        time.sleep(DELAY_BEFORE_GETTING_EMAILS)
-        #TBD  - need optimization of email count
         new_password_form = self.main_page.get_new_password_page()
-        new_password_form.open(self.user.email)
+
+        reset_link = self.get_reset_password_link(self.user.email)
+        new_password_form.open(reset_link)
         new_password_form.enter_and_confirm_new_password()
 
         self.assert_that_reset_password_is_correct()
+
+    def get_reset_password_link(self, email):
+        email_client_wrapper = AnonineEmailClientWrapper(QA_EMAIL, QA_EMAIL_PASSWORD)
+        reset_link = email_client_wrapper.get_link(email, SUBJECT_OF_RESET_PASSWORD_EMAIL, LINK_TEXT_FOR_RESET_PASSWORD_EMAIL)
+        if (bool(reset_link)):
+            return reset_link
+        else:
+            pytest.fail("There is no email to reset")
 
     def test_can_not_reset_password_by_incorrect_email(self):
         reset_password_form = self.login_form.open_reset_password_page()

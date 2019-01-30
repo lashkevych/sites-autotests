@@ -1,8 +1,9 @@
 import pytest
 
 from site_autotest.config import *
-from site_autotest.utils import wait_for, click_with_waiting_page_reload, create_user
-from site_autotest.settings import SITE_URL_WITH_BASIC_AUTH, SITE_URL_NO_BASIC_AUTH
+from site_autotest.utils import click_with_waiting_page_reload, create_user
+from site_autotest.settings import SITE_URL_WITH_BASIC_AUTH, SITE_URL_NO_BASIC_AUTH, SUBJECT_OF_RESET_PASSWORD_EMAIL, \
+    LINK_TEXT_FOR_RESET_PASSWORD_EMAIL
 from site_autotest.pages.client_area_page import ClientAreaPage
 from site_autotest.pages.payment_page import PaymentPage
 from Utils.emailR import AnonineEmailClientWrapper
@@ -162,11 +163,7 @@ class AnonineEnterNewPasswordPage(object):
     def __init__(self, driver):
         self.driver = driver
 
-    def open(self, user_email):
-        email_client_wrapper = AnonineEmailClientWrapper(QA_EMAIL, QA_EMAIL_PASSWORD)
-        subject = 'Anonine Password Reset Request'
-        link_text = 'RESET PASSWORD'
-        reset_link = email_client_wrapper.get_link(user_email, subject, link_text)
+    def open(self, reset_link):
         script_open_window = "window.open('%s', 'new_window')" % reset_link
         self.driver.execute_script(script_open_window)
         self.driver.switch_to_window(self.driver.window_handles[1])
@@ -191,4 +188,3 @@ class AnonineEnterNewPasswordPage(object):
 
     def submit_new_password(self):
         self.driver.find_element_by_css_selector("button[data-test='up-submit']").click()
-
